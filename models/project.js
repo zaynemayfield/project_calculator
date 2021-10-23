@@ -43,7 +43,7 @@ const model = function (sequelize, DataTypes) {
 }
 
 model.associate = (db) => {
-  db.project.hasMany(db.line_item, { as: 'line_items', foreignKey: 'project_id'})
-  db.project.belongsTo(db.user, { as: 'user', foreignKey: 'user_id'})
+  db.project.hasMany(db.line_item, { as: 'line_items', foreignKey: 'project_id' })
+  db.project.belongsTo(db.user, { as: 'user', foreignKey: 'user_id' })
 }
 module.exports = model

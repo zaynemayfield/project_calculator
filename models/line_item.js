@@ -62,7 +62,7 @@ const model = function (sequelize, DataTypes) {
   })
 }
 model.associate = (db) => {
-  db.line_item.belongsTo(db.material, { as: 'material', foreignKey: 'material_id'})
-  db.line_item.belongsTo(db.project, { as: 'project', foreignKey: 'project_id'})
+  db.line_item.belongsTo(db.material, { as: 'material', foreignKey: 'material_id' })
+  db.line_item.belongsTo(db.project, { as: 'project', foreignKey: 'project_id' })
 }
 module.exports = model

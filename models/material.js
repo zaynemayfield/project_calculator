@@ -55,7 +55,7 @@ const model = function (sequelize, DataTypes) {
   })
 }
 model.associate = (db) => {
-  db.material.belongsTo(db.user, { as: 'user', foreignKey: 'user_id'})
-  db.material.hasMany(db.line_item, { as: 'line_items', foreignKey: 'material_id'})
+  db.material.belongsTo(db.user, { as: 'user', foreignKey: 'user_id' })
+  db.material.hasMany(db.line_item, { as: 'line_items', foreignKey: 'material_id' })
 }
 module.exports = model
