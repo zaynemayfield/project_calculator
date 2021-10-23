@@ -31,6 +31,19 @@ class UserController {
     delete user.dataValues.password
     return res.send({user: user})
   }
+
+  async login (req, res) {
+    const user = await db.user.findOne({ where: { email: req.body.email }})
+    if (!user) {
+      return new Helper(res).sendError('Unknown User Email Address', 'email')
+    }
+    const passwordCorrect = await bcrypt.compare(req.body.password, user.password)
+    if (!passwordCorrect){
+      return new Helper(res).sendError('Password incorrect', 'password')
+    }
+    delete user.dataValues.password
+    return res.send({ user: user })
+  }
 }
 
 export default new UserController()

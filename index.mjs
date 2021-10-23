@@ -13,7 +13,6 @@ import usercontroller from './controllers/usercontroller.mjs'
 
 // Creating Express App
 const app = express()
-const port = 3000
 app.use(express.json())
 
 // Making Database Connection (Sequelize CLI)
@@ -35,9 +34,10 @@ app.get('/', (req, res) => {
 })
 
 app.post('/user', usercontroller.create)
-
+app.post('/user/login', usercontroller.login)
 app.get('/user/:id', usercontroller.read)
 
+const port = parseInt(process.env.SERVER_PORT, 10)
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
