@@ -10,6 +10,7 @@ import config from './config/index.mjs'
 
 // import { Sequelize } from 'sequelize'
 import usercontroller from './controllers/usercontroller.mjs'
+import projectcontroller from './controllers/projectcontroller.mjs'
 
 // Creating Express App
 const app = express()
@@ -36,6 +37,11 @@ app.get('/', (req, res) => {
 app.post('/user', usercontroller.create)
 app.post('/user/login', usercontroller.login)
 app.get('/user/:id', usercontroller.read)
+
+app.post('/createproject', projectcontroller.create)
+app.get('/project/:id', projectcontroller.read)
+app.post('/project/creatematerial', projectcontroller.createMaterial)
+app.get('/project/material/:id', projectcontroller.readMaterial)
 
 const port = parseInt(process.env.SERVER_PORT, 10)
 app.listen(port, () => {
