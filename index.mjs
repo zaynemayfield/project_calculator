@@ -1,6 +1,15 @@
 import express from 'express'
 import dotenv from 'dotenv'
-dotenv.config()
+/*
+javascript will do all imports before any other code, so
+ even though this line comes before import usercontroller,
+ it doesn't actually get run until after. The solution is
+ to make a module that calls dotenv.config
+ */
+//const config = dotenv.config()
+import config from './config/index.mjs'
+
+console.log(config);
 // import { Sequelize } from 'sequelize'
 import usercontroller from './controllers/usercontroller.mjs'
 
