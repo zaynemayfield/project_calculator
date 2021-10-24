@@ -44,6 +44,24 @@ class UserController {
     delete user.dataValues.password
     return res.send({ user: user })
   }
+
+  async delete (req, res) {
+    const userid = await db.user.findByPk(req.params.id)
+    if (!userid) {
+      return new Helper(res).sendError('No user with that ID Exists', 'id')
+    }
+    try {
+      await db.user.destroy({
+        where: { id: userid.id }
+      })
+    } catch (error) {
+      return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
+    }
+    
+    
+    return res.send({userid: userid})
+  }
+
 }
 
 export default new UserController()

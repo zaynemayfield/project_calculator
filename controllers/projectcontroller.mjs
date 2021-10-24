@@ -26,6 +26,22 @@ class ProjectController {
     return res.send({project: project})
   }
 
+  async delete (req, res) {
+    const projectid = await db.project.findByPk(req.params.id)
+    if (!projectid) {
+      return new Helper(res).sendError('No project with that ID Exists', 'id')
+    }
+    try {
+      await db.project.destroy({
+        where: { id: projectid.id }
+      })
+    } catch (error) {
+      return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
+    }
+    
+    
+    return res.send({projectid: projectid})
+  }
 
 }
 

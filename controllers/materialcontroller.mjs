@@ -30,6 +30,23 @@ async read (req, res) {
   return res.send({material: material})
 }
 
+async delete (req, res) {
+  const materialid = await db.material.findByPk(req.params.id)
+  if (!materialid) {
+    return new Helper(res).sendError('No material with that ID Exists', 'id')
+  }
+  try {
+    await db.material.destroy({
+      where: { id: materialid.id }
+    })
+  } catch (error) {
+    return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
+  }
+  
+  
+  return res.send({materialid: materialid})
+}
+
 }
 
 export default new MaterialController()
