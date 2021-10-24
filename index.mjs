@@ -11,6 +11,7 @@ import config from './config/index.mjs'
 // import { Sequelize } from 'sequelize'
 import usercontroller from './controllers/usercontroller.mjs'
 import projectcontroller from './controllers/projectcontroller.mjs'
+import materialcontroller from './controllers/materialcontroller.mjs'
 
 // Creating Express App
 const app = express()
@@ -33,15 +34,16 @@ try {
 app.get('/', (req, res) => {
   res.send({ greeting: 'Hello World!' })
 })
-
+// USER
 app.post('/user', usercontroller.create)
 app.post('/user/login', usercontroller.login)
 app.get('/user/:id', usercontroller.read)
-
+// PROJECT
 app.post('/createproject', projectcontroller.create)
 app.get('/project/:id', projectcontroller.read)
-app.post('/project/creatematerial', projectcontroller.createMaterial)
-app.get('/project/material/:id', projectcontroller.readMaterial)
+// MATERIAL
+app.post('/creatematerial', materialcontroller.create)
+app.get('/material/:id', materialcontroller.read)
 
 const port = parseInt(process.env.SERVER_PORT, 10)
 app.listen(port, () => {
