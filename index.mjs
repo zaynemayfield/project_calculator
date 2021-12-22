@@ -1,57 +1,51 @@
 import express from 'express'
-import dotenv from 'dotenv'
+import cors from 'cors'
 /*
 javascript will do all imports before any other code, so
  even though this line comes before import usercontroller,
  it doesn't actually get run until after. The solution is
  to make a module that calls dotenv.config
  */
-import config from './config/index.mjs'
-
-// import { Sequelize } from 'sequelize'
 import usercontroller from './controllers/usercontroller.mjs'
 import projectcontroller from './controllers/projectcontroller.mjs'
 import materialcontroller from './controllers/materialcontroller.mjs'
 
+import busboy from 'express-busboy'
+
 // Creating Express App
 const app = express()
+const port = 3000
+app.use(cors())
 app.use(express.json())
-
-// Making Database Connection (Sequelize CLI)
-// When installing use node_modules/.bin/sequelize init
-/*const sequelize = new Sequelize('project_calculator', 'root', '', {
-  host: 'localhost',
-  dialect: 'mariadb'
-})
-
-try {
-  await sequelize.authenticate()
-  console.log('Connection has been established successfully.')
-} catch (error) {
-  console.error('Unable to connect to the database:', error)
-}
-*/
-app.get('/', (req, res) => {
-  res.send({ greeting: 'Hello World!' })
+busboy.extend(app, {
+  upload: true,
+  allowedPath: url => {
+    return [
+      '/user_register'
+    ].includes(url)
+  },
+  mimeTypeLimit: [
+    'image/jpeg',
+    'image/png'
+  ]
 })
 
 // USER
-app.post('/user', usercontroller.create)
-app.post('/user/login', usercontroller.login)
-app.get('/user/:id', usercontroller.read)
-app.get('/deleteuser/:id', usercontroller.delete)
+app.post('/user', usercontroller.create.bind(usercontroller))
+app.post('/user/login', usercontroller.login.bind(usercontroller))
+app.get('/user/:id', usercontroller.read.bind(usercontroller))
+app.get('/deleteuser/:id', usercontroller.delete.bind(usercontroller))
 
 // PROJECT
-app.post('/createproject', projectcontroller.create)
-app.get('/project/:id', projectcontroller.read)
-app.get('/deleteproject/:id', projectcontroller.delete)
+app.post('/createproject', projectcontroller.create.bind(projectcontroller))
+app.get('/project/:id', projectcontroller.read.bind(projectcontroller))
+app.get('/deleteproject/:id', projectcontroller.delete.bind(projectcontroller))
 
 // MATERIAL
-app.post('/creatematerial', materialcontroller.create)
-app.get('/material/:id', materialcontroller.read)
-app.get('/deletematerial/:id', materialcontroller.delete)
+app.post('/creatematerial', materialcontroller.create.bind(materialcontroller))
+app.get('/material/:id', materialcontroller.read.bind(materialcontroller))
+app.get('/deletematerial/:id', materialcontroller.delete.bind(materialcontroller))
 
-const port = parseInt(process.env.SERVER_PORT, 10)
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })

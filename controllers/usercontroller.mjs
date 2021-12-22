@@ -6,10 +6,20 @@ const prisma = new PrismaClient()
 import Helper from '../utilities/helper.mjs'
 import validator from 'validator'
 import Busboy from 'busboy'
-import path from 'path'
-import fs from 'fs'
+import { mkdir } from 'fs/promises'
+import sharp from 'sharp'
 
 class UserController {
+  generate_token () {
+    const token = crypto.randomBytes(16).toString('hex')
+    return token
+  }
+  update_token (user_id) {
+    return prisma.user.update({
+      where: {id: user_id},
+      data: { token: this.generate_token()}
+    })
+  }
   async create (req, res) {
     try {
       const password = req.body.password
@@ -18,11 +28,28 @@ class UserController {
       }
       const hash = await bcrypt.hash(req.body.password, 12)
       const email = req.body.email
-      if (!validator.isEmail(email)){
-        return new Helper(res).sendError(`${email} is not a validate email`, 'email')
-      }
-      const user = await prisma.user.create({email: email, password: hash})
+        const check_email = await prisma.user.findUnique({where: { email: email } })
+        if (check_email) {
+          return new Helper(res).sendError('${email} is not available', 'email')
+        }
+        if (!validator.isEmail(email)){
+            return new Helper(res).sendError('${email} is not a valid email', 'email')
+        }
+      const user = await prisma.user.create({ data: { email: email, password: hash, token: this.generate_token() } })
       delete user.password
+      const avatar = req.files?.avatar
+      if (avatar) {
+        const path = `./resources/user/${user.id}`
+        await mkdir( path, { recursive: true } )
+        await sharp(avatar.file)
+        .resize(240)
+        .toFile(`${path}/avatar.png`, function(err) {
+          if (!err) {
+            console.log('Modified and moved image')
+          }
+        })
+        user.avatar = `${path}/avatar.png`
+      }
       return res.send({user: user})
     } catch (error) {
       return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
@@ -30,7 +57,8 @@ class UserController {
   }
 
   async read (req, res) {
-    const user = await prisma.user.findUnique({ where: { id: req.params.id}})
+    const id = parseInt(req.params.id)
+    const user = await prisma.user.findUnique({ where: { id: id}})
     if (!user) {
       return new Helper(res).sendError('No user with that ID Exists', 'id')
     }
@@ -52,13 +80,15 @@ class UserController {
   }
 
   async delete (req, res) {
-    const userid = await prisma.user.findUnique({ where: { id: req.params.id } })
+    const id = parseInt(req.params.id)
+    const userid = await prisma.user.findUnique({ where: { id: id } })
     if (!userid) {
       return new Helper(res).sendError('No user with that ID Exists', 'id')
     }
     try {
       await prisma.user.delete({
-        where: { id: userid.id }
+        where: { id: userid.id },
+        data: { delete: 'Y'}
       })
     } catch (error) {
       return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })

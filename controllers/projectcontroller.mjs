@@ -1,4 +1,6 @@
-import db from '../models/index.js'
+import pkg from '@prisma/client'
+const { PrismaClient } = pkg
+const prisma = new PrismaClient()
 import Helper from '../utilities/helper.mjs'
 
 class ProjectController {
@@ -9,7 +11,7 @@ class ProjectController {
         return new Helper(res).sendError("No Name Entered", 'name')
       }
       const user_id = req.body.user_id
-      const project = await db.project.create({name: name, user_id: user_id})
+      const project = await prisma.project.create({ data: { name: name, user_id: user_id } })
       delete project.dataValues.user_id
       return res.send({project: project})
     } catch (error) {
@@ -18,7 +20,8 @@ class ProjectController {
   }
 
   async read (req, res) {
-    const project = await db.project.findByPk(req.params.id)
+    const id = parseInt(req.params.id)
+    const project = await prisma.project.findUnique({ where: {id: id}})
     if (!project) {
       return new Helper(res).sendError('No project with that ID Exists', 'id')
     }
@@ -27,13 +30,15 @@ class ProjectController {
   }
 
   async delete (req, res) {
-    const projectid = await db.project.findByPk(req.params.id)
+    const id = parseInt(req.params.id)
+    const projectid = await prisma.project.findUnique({ where: {id: id}})
     if (!projectid) {
       return new Helper(res).sendError('No project with that ID Exists', 'id')
     }
     try {
-      await db.project.destroy({
-        where: { id: projectid.id }
+      await prisma.project.delete({
+        where: { id: projectid.id },
+        data: { delete: 'Y' }
       })
     } catch (error) {
       return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
