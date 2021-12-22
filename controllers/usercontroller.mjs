@@ -1,7 +1,13 @@
-import db from '../models/index.js'
 import bcrypt from 'bcrypt'
-import validator from 'validator'
+import crypto from 'crypto'
+import pkg from '@prisma/client'
+const { PrismaClient } = pkg
+const prisma = new PrismaClient()
 import Helper from '../utilities/helper.mjs'
+import validator from 'validator'
+import Busboy from 'busboy'
+import path from 'path'
+import fs from 'fs'
 
 class UserController {
   async create (req, res) {
@@ -15,8 +21,8 @@ class UserController {
       if (!validator.isEmail(email)){
         return new Helper(res).sendError(`${email} is not a validate email`, 'email')
       }
-      const user = await db.user.create({email: email, password: hash})
-      delete user.dataValues.password
+      const user = await prisma.user.create({email: email, password: hash})
+      delete user.password
       return res.send({user: user})
     } catch (error) {
       return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
@@ -24,16 +30,16 @@ class UserController {
   }
 
   async read (req, res) {
-    const user = await db.user.findByPk(req.params.id)
+    const user = await prisma.user.findUnique({ where: { id: req.params.id}})
     if (!user) {
       return new Helper(res).sendError('No user with that ID Exists', 'id')
     }
-    delete user.dataValues.password
+    delete user.password
     return res.send({user: user})
   }
 
   async login (req, res) {
-    const user = await db.user.findOne({ where: { email: req.body.email }})
+    const user = await prisma.user.findUnique({ where: { email: req.body.email } })
     if (!user) {
       return new Helper(res).sendError('Unknown User Email Address', 'email')
     }
@@ -41,17 +47,17 @@ class UserController {
     if (!passwordCorrect){
       return new Helper(res).sendError('Password incorrect', 'password')
     }
-    delete user.dataValues.password
+    delete user.password
     return res.send({ user: user })
   }
 
   async delete (req, res) {
-    const userid = await db.user.findByPk(req.params.id)
+    const userid = await prisma.user.findUnique({ where: { id: req.params.id } })
     if (!userid) {
       return new Helper(res).sendError('No user with that ID Exists', 'id')
     }
     try {
-      await db.user.destroy({
+      await prisma.user.delete({
         where: { id: userid.id }
       })
     } catch (error) {

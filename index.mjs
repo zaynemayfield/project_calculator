@@ -34,15 +34,18 @@ try {
 app.get('/', (req, res) => {
   res.send({ greeting: 'Hello World!' })
 })
+
 // USER
 app.post('/user', usercontroller.create)
 app.post('/user/login', usercontroller.login)
 app.get('/user/:id', usercontroller.read)
 app.get('/deleteuser/:id', usercontroller.delete)
+
 // PROJECT
 app.post('/createproject', projectcontroller.create)
 app.get('/project/:id', projectcontroller.read)
 app.get('/deleteproject/:id', projectcontroller.delete)
+
 // MATERIAL
 app.post('/creatematerial', materialcontroller.create)
 app.get('/material/:id', materialcontroller.read)
