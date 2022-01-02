@@ -26,12 +26,13 @@ busboy.extend(app, {
   },
   mimeTypeLimit: [
     'image/jpeg',
+    'image/jpg',
     'image/png'
   ]
 })
 
 // USER
-app.post('/user', usercontroller.create.bind(usercontroller))
+app.post('/user/register', usercontroller.create.bind(usercontroller))
 app.post('/user/login', usercontroller.login.bind(usercontroller))
 app.get('/user/:id', usercontroller.read.bind(usercontroller))
 app.get('/deleteuser/:id', usercontroller.delete.bind(usercontroller))
@@ -45,6 +46,11 @@ app.get('/deleteproject/:id', projectcontroller.delete.bind(projectcontroller))
 app.post('/creatematerial', materialcontroller.create.bind(materialcontroller))
 app.get('/material/:id', materialcontroller.read.bind(materialcontroller))
 app.get('/deletematerial/:id', materialcontroller.delete.bind(materialcontroller))
+
+//All
+app.all('*',(req,res) => {
+  res.status(404).send('<h1>Not Found</h1>')
+})
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)

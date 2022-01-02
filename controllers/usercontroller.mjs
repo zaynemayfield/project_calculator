@@ -8,6 +8,8 @@ import validator from 'validator'
 import Busboy from 'busboy'
 import { mkdir } from 'fs/promises'
 import sharp from 'sharp'
+import jwt from 'jsonwebtoken'
+
 
 class UserController {
   generate_token () {
@@ -49,7 +51,16 @@ class UserController {
           }
         })
         user.avatar = `${path}/avatar.png`
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            avatar: user.avatar,
+          }
+        })
       }
+      
       return res.send({user: user})
     } catch (error) {
       return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
@@ -76,7 +87,8 @@ class UserController {
       return new Helper(res).sendError('Password incorrect', 'password')
     }
     delete user.password
-    return res.send({ user: user })
+    const accessToken = jwt.sign(user, process.env.SECRET_TOKEN)
+    return res.send({ accessToken })
   }
 
   async delete (req, res) {
