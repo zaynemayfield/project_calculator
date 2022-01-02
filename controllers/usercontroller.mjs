@@ -10,7 +10,6 @@ import sharp from 'sharp'
 import jwt from 'jsonwebtoken'
 import Joi from 'joi'
 
-
 class UserController {
   validateUser(user) {
     const schema = Joi.object({
@@ -32,9 +31,10 @@ class UserController {
   }
   async create (req, res) {
     try {
+      //Validate using Joi
       const response = this.validateUser(req.body)
       if (response.error) {
-        return res.status(400).send(response.error.details)
+        return new Helper(res).sendError(response.error.details[0].message, response.error.details[0].path)
       }
       else {
         //Hash Pasword
@@ -62,7 +62,9 @@ class UserController {
           }
         })
         //update db for the avatar url
-        user.avatar = `${path}/avatar.png`
+        const urlAvatar = `${path}/avatar.png`
+        user.avatar = urlAvatar.slice(1)
+        
         await prisma.user.update({
           where: {
             id: user.id,
@@ -95,18 +97,29 @@ class UserController {
   }
 
   async login (req, res) {
+    //Validate with Joi
+    const response = this.validateUser(req.body)
+      if (response.error) {
+        return new Helper(res).sendError(response.error.details[0].message, response.error.details[0].path)
+      }
+      else {
+        //Find user in database
     const user = await prisma.user.findUnique({ where: { email: req.body.email } })
     if (!user) {
       return new Helper(res).sendError('Unknown User Email Address', 'email')
     }
+    //check if passwords match
     const passwordCorrect = await bcrypt.compare(req.body.password, user.password)
     if (!passwordCorrect){
       return new Helper(res).sendError('Password incorrect', 'password')
     }
+    //remove password
     delete user.password
-    const accessToken = jwt.sign(user, process.env.SECRET_TOKEN)
+    //create JWT Token
+    const accessToken = jwt.sign({id: user.id}, process.env.SECRET_TOKEN, { expiresIn: '7d'})
     return res.send({ accessToken })
   }
+}
 
   async delete (req, res) {
     const id = parseInt(req.params.id)
@@ -115,7 +128,7 @@ class UserController {
       return new Helper(res).sendError('No user with that ID Exists', 'id')
     }
     try {
-      await prisma.user.delete({
+      await prisma.user.update({
         where: { id: userid.id },
         data: { delete: 'Y'}
       })

@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import dotenv from 'dotenv'
 /*
 javascript will do all imports before any other code, so
  even though this line comes before import usercontroller,
@@ -9,6 +10,7 @@ javascript will do all imports before any other code, so
 import usercontroller from './controllers/usercontroller.mjs'
 import projectcontroller from './controllers/projectcontroller.mjs'
 import materialcontroller from './controllers/materialcontroller.mjs'
+import { verifytoken } from './utilities/verifytoken.mjs'
 
 import busboy from 'express-busboy'
 
@@ -30,10 +32,15 @@ busboy.extend(app, {
     'image/png'
   ]
 })
-
-// USER
+//Routes that don't require authentication
 app.post('/user/register', usercontroller.create.bind(usercontroller))
 app.post('/user/login', usercontroller.login.bind(usercontroller))
+
+//Middleware for JWT
+app.use(verifytoken())
+
+
+// USER
 app.get('/user/:id', usercontroller.read.bind(usercontroller))
 app.get('/deleteuser/:id', usercontroller.delete.bind(usercontroller))
 
