@@ -10,7 +10,7 @@ javascript will do all imports before any other code, so
 import usercontroller from './controllers/usercontroller.mjs'
 import projectcontroller from './controllers/projectcontroller.mjs'
 import materialcontroller from './controllers/materialcontroller.mjs'
-import { verifytoken } from './utilities/verifytoken.mjs'
+import verifytoken from './utilities/verifytoken.mjs'
 
 import busboy from 'express-busboy'
 
@@ -37,7 +37,7 @@ app.post('/user/register', usercontroller.create.bind(usercontroller))
 app.post('/user/login', usercontroller.login.bind(usercontroller))
 
 //Middleware for JWT
-app.use(verifytoken())
+app.use(verifytoken)
 
 
 // USER

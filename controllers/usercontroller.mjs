@@ -116,7 +116,7 @@ class UserController {
     //remove password
     delete user.password
     //create JWT Token
-    const accessToken = jwt.sign({id: user.id}, process.env.SECRET_TOKEN, { expiresIn: '7d'})
+    const accessToken = jwt.sign({_id: user.id}, process.env.SECRET_TOKEN, { expiresIn: '7d'})
     return res.send({ accessToken })
   }
 }
