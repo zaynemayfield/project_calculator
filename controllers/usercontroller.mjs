@@ -4,14 +4,22 @@ import pkg from '@prisma/client'
 const { PrismaClient } = pkg
 const prisma = new PrismaClient()
 import Helper from '../utilities/helper.mjs'
-import validator from 'validator'
 import Busboy from 'busboy'
 import { mkdir } from 'fs/promises'
 import sharp from 'sharp'
 import jwt from 'jsonwebtoken'
+import Joi from 'joi'
 
 
 class UserController {
+  validateUser(user) {
+    const schema = Joi.object({
+      email: Joi.string().email({minDomainSegments: 2,}).min(4).required(),
+      password: Joi.string().min(3).required(),
+    })
+    return schema.validate(user)
+  }
+
   generate_token () {
     const token = crypto.randomBytes(16).toString('hex')
     return token
@@ -24,23 +32,26 @@ class UserController {
   }
   async create (req, res) {
     try {
-      const password = req.body.password
-      if (password.length < 8){
-        return new Helper(res).sendError("Password is too short", 'password')
+      const response = this.validateUser(req.body)
+      if (response.error) {
+        return res.status(400).send(response.error.details)
       }
-      const hash = await bcrypt.hash(req.body.password, 12)
-      const email = req.body.email
-        const check_email = await prisma.user.findUnique({where: { email: email } })
+      else {
+        //Hash Pasword
+        const hash = await bcrypt.hash(req.body.password, 12)
+        //check if email is unique
+        const check_email = await prisma.user.findUnique({where: { email: req.body.email } })
         if (check_email) {
           return new Helper(res).sendError('${email} is not available', 'email')
         }
-        if (!validator.isEmail(email)){
-            return new Helper(res).sendError('${email} is not a valid email', 'email')
-        }
-      const user = await prisma.user.create({ data: { email: email, password: hash, token: this.generate_token() } })
+      //create user
+      const user = await prisma.user.create({ data: { email: req.body.email, password: hash, token: this.generate_token() } })
+      //remove password from object
       delete user.password
+      //check if user uploaded an avatar
       const avatar = req.files?.avatar
       if (avatar) {
+        //handle creating path, moving, resizing, etc.
         const path = `./resources/user/${user.id}`
         await mkdir( path, { recursive: true } )
         await sharp(avatar.file)
@@ -50,6 +61,7 @@ class UserController {
             console.log('Modified and moved image')
           }
         })
+        //update db for the avatar url
         user.avatar = `${path}/avatar.png`
         await prisma.user.update({
           where: {
@@ -60,10 +72,15 @@ class UserController {
           }
         })
       }
+      else {
+        console.log('no avatar present')
+      }
       
       return res.send({user: user})
+    }
     } catch (error) {
-      return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
+      console.error(error)
+      // return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
     }
   }
 

@@ -53,9 +53,10 @@ model user {
   id        Int        @id @default(autoincrement()) @db.UnsignedInt
   createdAt DateTime   @default(now()) @db.Timestamp(0)
   updatedAt DateTime?  @default(now()) @db.Timestamp(0)
-  email     String     @db.VarChar(255)
+  email     String     @db.VarChar(255) @unique
   password  String     @db.VarChar(255)
   token     String?    @db.VarChar(255)
+  avatar    String?    @db.VarChar(255)
   material  material[]
   project   project[]
 }

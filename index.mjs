@@ -21,7 +21,7 @@ busboy.extend(app, {
   upload: true,
   allowedPath: url => {
     return [
-      '/user_register'
+      '/user/register'
     ].includes(url)
   },
   mimeTypeLimit: [
