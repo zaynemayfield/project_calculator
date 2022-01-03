@@ -44,6 +44,8 @@ class UserController {
         if (check_email) {
           return new Helper(res).sendError('${email} is not available', 'email')
         }
+        //check to see if account has been deleted
+
       //create user
       const user = await prisma.user.create({ data: { email: req.body.email, password: hash, token: this.generate_token() } })
       //remove password from object
@@ -103,21 +105,25 @@ class UserController {
         return new Helper(res).sendError(response.error.details[0].message, response.error.details[0].path)
       }
       else {
+
         //Find user in database
     const user = await prisma.user.findUnique({ where: { email: req.body.email } })
     if (!user) {
       return new Helper(res).sendError('Unknown User Email Address', 'email')
     }
+
+    //check if account has been deleted
+    new Helper(res).deleted(user.deleted, "account")
+
     //check if passwords match
     const passwordCorrect = await bcrypt.compare(req.body.password, user.password)
     if (!passwordCorrect){
       return new Helper(res).sendError('Password incorrect', 'password')
     }
-    if (user.deleted === 'Y') {
-      return new Helper(res).sendError('Account has been deleted')
-    }
+
     //remove password
     delete user.password
+
     //create JWT Token
     const accessToken = jwt.sign({_id: user.id, type: user.type}, process.env.SECRET_TOKEN, { expiresIn: '7d'})
     return res.send({ accessToken })
