@@ -113,10 +113,13 @@ class UserController {
     if (!passwordCorrect){
       return new Helper(res).sendError('Password incorrect', 'password')
     }
+    if (user.deleted === 'Y') {
+      return new Helper(res).sendError('Account has been deleted')
+    }
     //remove password
     delete user.password
     //create JWT Token
-    const accessToken = jwt.sign({_id: user.id}, process.env.SECRET_TOKEN, { expiresIn: '7d'})
+    const accessToken = jwt.sign({_id: user.id, type: user.type}, process.env.SECRET_TOKEN, { expiresIn: '7d'})
     return res.send({ accessToken })
   }
 }
@@ -130,7 +133,7 @@ class UserController {
     try {
       await prisma.user.update({
         where: { id: userid.id },
-        data: { delete: 'Y'}
+        data: { deleted: 'Y'}
       })
     } catch (error) {
       return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
