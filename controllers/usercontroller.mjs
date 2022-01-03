@@ -42,7 +42,7 @@ class UserController {
         //check if email is unique
         const check_email = await prisma.user.findUnique({where: { email: req.body.email } })
         if (check_email) {
-          return new Helper(res).sendError('${email} is not available', 'email')
+          return new Helper(res).sendError(`${req.body.email} is already registered`, 'email')
         }
         //check to see if account has been deleted
 
@@ -92,7 +92,7 @@ class UserController {
     const id = parseInt(req.params.id)
     const user = await prisma.user.findUnique({ where: { id: id}})
     if (!user) {
-      return new Helper(res).sendError('No user with that ID Exists', 'id')
+      return new Helper(res).sendError(`No user with that ID Exists`, 'id')
     }
     delete user.password
     return res.send({user: user})

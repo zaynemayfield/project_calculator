@@ -46,6 +46,7 @@ app.get('/deleteuser/:id', usercontroller.delete.bind(usercontroller))
 
 // PROJECT
 app.post('/createproject', projectcontroller.create.bind(projectcontroller))
+app.get('/projects', projectcontroller.list.bind(projectcontroller))
 app.get('/project/:id', projectcontroller.read.bind(projectcontroller))
 app.get('/deleteproject/:id', projectcontroller.delete.bind(projectcontroller))
 

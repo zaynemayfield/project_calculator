@@ -1,18 +1,23 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+<ul>
+  <li :key="index" v-for="(project, index) in projects">{{ project.name }}</li>
+</ul>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import { inject, onMounted, ref } from 'vue'
 
 export default {
-  name: 'Home',
-  components: {
-    HelloWorld
+  setup() {
+    const apiClient = inject('$api', {})
+    const projects = ref([])
+    const getProjects = async () => {
+      projects.value = await apiClient.getProjects()
+       }
+       onMounted(getProjects)
+      return {
+        projects
+      }
   }
 }
 </script>
