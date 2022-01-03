@@ -50,15 +50,15 @@ model project {
 }
 
 model user {
-  id        Int          @id @default(autoincrement()) @db.UnsignedInt
-  createdAt DateTime     @default(now()) @db.Timestamp(0)
-  updatedAt DateTime?    @default(now()) @db.Timestamp(0)
-  email     String       @unique @db.VarChar(255)
-  password  String       @db.VarChar(255)
-  token     String?      @db.VarChar(255)
-  avatar    String?      @db.VarChar(255)
-  type      user_type    @default(user)
-  deleted   user_deleted @default(N)
+  id        Int        @id @default(autoincrement()) @db.UnsignedInt
+  createdAt DateTime   @default(now()) @db.Timestamp(0)
+  updatedAt DateTime?  @default(now()) @db.Timestamp(0)
+  email     String     @unique @db.VarChar(255)
+  password  String     @db.VarChar(255)
+  token     String?    @db.VarChar(255)
+  avatar    String?    @db.VarChar(255)
+  deleted   Boolean    @default(false)
+  type      user_type  @default(user)
   material  material[]
   project   project[]
 }
@@ -67,9 +67,4 @@ enum user_type {
   user
   admin
   mod
-}
-
-enum user_deleted {
-  Y
-  N
 }

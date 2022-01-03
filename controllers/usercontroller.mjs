@@ -113,7 +113,9 @@ class UserController {
     }
 
     //check if account has been deleted
-    new Helper(res).deleted(user.deleted, "account")
+    if (user.deleted) {
+      return new Helper(res).sendError('Account was deleted', 'Account')
+    }
 
     //check if passwords match
     const passwordCorrect = await bcrypt.compare(req.body.password, user.password)

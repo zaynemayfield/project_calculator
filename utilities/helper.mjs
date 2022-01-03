@@ -13,11 +13,5 @@ export default class Helper {
       ]
     })
   }
-  deleted (status,type) {
-    console.log(status, type)
-    if (status === 'Y') {
-      return this.res.send('${type} has been deleted')
-    }
-  } 
   
 }
