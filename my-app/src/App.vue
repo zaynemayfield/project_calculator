@@ -2,7 +2,7 @@
   <div>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">Project Calculator</a>
+        <a class="navbar-brand" href="/">Project Calculator</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -20,7 +20,7 @@
               <router-link class="nav-link" active-class="active" to="/">Home</router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" active-class="active" to="/Login">Log in</router-link>
+              <router-link class="nav-link" active-class="active" to="/login">Log in</router-link>
             </li>
           </ul>
         </div>
