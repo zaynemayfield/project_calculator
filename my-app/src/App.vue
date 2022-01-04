@@ -16,9 +16,13 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
+
+            <!-- Only show this if user is logged in -->
             <li class="nav-item">
-              <router-link class="nav-link" active-class="active" :to="{ name: 'Landing' }">Home</router-link>
+              <router-link class="nav-link" active-class="active" :to="{ name: 'Home' }">Home</router-link>
             </li>
+
+
             <li class="nav-item">
               <router-link class="nav-link" active-class="active" :to="{ name: 'Login' }">Log in / Sign up</router-link>
             </li>
