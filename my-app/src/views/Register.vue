@@ -38,7 +38,7 @@
             <button type="submit" class="btn btn-primary">Register</button>
           </div>
           <div class="col">
-            <router-link :to="{ name: 'Log in' }">Existing user? Log in.</router-link>
+            <router-link :to="{ name: 'Login' }">Existing user? Log in.</router-link>
           </div>
         </div>
       </form>

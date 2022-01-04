@@ -1,8 +1,10 @@
 <template>
+<div>
 <h4 v-if="!projects.length">No projects yet</h4>
 <ul v-if="projects.length">
   <li :key="index" v-for="(project, index) in projects">{{ project.name }}</li>
 </ul>
+</div>
 </template>
 
 <script>
