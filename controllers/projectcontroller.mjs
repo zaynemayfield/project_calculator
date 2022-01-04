@@ -20,7 +20,12 @@ class ProjectController {
   }
 
   async list (req, res) {
-    const projects = await prisma.project.findMany({ where: {user_id: req.user.id}})
+    const projects = await prisma.project.findMany({ where: {user_id: req.user._id}})
+    return res.send({projects: projects})
+  }
+
+  async publicList (req, res) {
+    const projects = await prisma.project.findMany({ where: {type: 'Public'}, include: { user: { select: { avatar: true} } }, orderBy: { updatedAt: 'desc' }, take: 3})
     return res.send({projects: projects})
   }
 
