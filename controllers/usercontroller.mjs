@@ -128,6 +128,7 @@ class UserController {
 
     //create JWT Token
     const accessToken = jwt.sign({_id: user.id, type: user.type}, process.env.SECRET_TOKEN, { expiresIn: '7d'})
+    console.log('logged in!')
     return res.send({ accessToken })
   }
 }

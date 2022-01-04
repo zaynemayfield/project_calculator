@@ -26,6 +26,7 @@ export default class ApiClient {
     }
 
     post (url, data) {
+        console.log(data)
         return this.request(url, data)
     }
 
@@ -35,5 +36,9 @@ export default class ApiClient {
 
     register (data) {
         return this.post('/user/register', data)
+    }
+
+    login (data) {
+        return this.post('/user/login', data)
     }
 }

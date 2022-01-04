@@ -2,7 +2,7 @@
 <div class="card">
 <div class="card-body">
   <h1 class="card-title">Log in</h1>
-  <form>
+  <form enctype="application/x-www-form-urlencoded" @submit.prevent="handleLogin">
   <div class="mb-3">
     <label for="email" class="form-label">Email address</label>
     <input type="email" class="form-control" id="email" name="email" required>
@@ -19,3 +19,18 @@
 </div>
 </div>
 </template>
+
+<script>
+import { inject } from '@vue/runtime-core'
+export default {
+    setup() {
+        const apiClient = inject('$api', {})
+        return {
+            handleLogin: (e) => {
+                const data = new FormData(e.target)
+                apiClient.login(data)
+                }
+            }
+        }
+    }
+</script>
