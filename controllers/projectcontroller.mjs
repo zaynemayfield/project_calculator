@@ -20,9 +20,8 @@ class ProjectController {
   }
 
   async list (req, res) {
-    const id = parseInt(req.params.id)
     const projects = await prisma.project.findMany({ where: {user_id: req.user.id}})
-    return res.send({project: projects})
+    return res.send({projects: projects})
   }
 
   async read (req, res) {

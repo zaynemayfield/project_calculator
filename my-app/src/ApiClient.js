@@ -3,24 +3,36 @@ export default class ApiClient {
         this.baseUrl = 'http://localhost:3000'
         this.store = store
         this.router = router
+        this.accessToken = window.localStorage.getItem('accessToken')
     }
+
     async request (url, payload = null) {
+      const method = payload ? 'POST' : 'GET'
+      console.log(`Request: ${method} ${url}`)
         const options = {
-            method: payload ? 'POST' : 'GET',
+            method: method,
             headers: {}
         }
         if (payload instanceof FormData) {
             options.body = payload
-        } else {
+        } else if(payload) {
             options.body = JSON.stringify(payload)
             options.headers['Content-Type'] = 'application/json'
         }
+        if (this.accessToken) {
+            options.headers['Authorization'] = `Bearer ${this.accessToken}`
+        }
         const request = await fetch(`${this.baseUrl}${url}`, options)
         if (request.status === 401) {
-            return this.router.push({ name: 'Log In'})
+            return this.router.push({ name: 'Login'})
         }
-        return request.json()
+        const response = await request.json()
+        if (response.errors) {
+            this.store.commit('errors', response.errors)
+        }
+        return response
     }
+
     get (url) {
         return this.request(url, null)
     }
@@ -30,15 +42,29 @@ export default class ApiClient {
         return this.request(url, data)
     }
 
-    getProjects () {
-        return this.get('/projects')
+    async getProjects () {
+        const request = await this.get('/projects')
+        if (!request?.projects) {
+            return request;
+        }
+        return request.projects
     }
 
     register (data) {
         return this.post('/user/register', data)
     }
 
-    login (data) {
-        return this.post('/user/login', data)
+    setAccessToken (token) {
+        this.accessToken = token
+        window.localStorage.setItem('accessToken', token)
+    }
+
+    async login (data) {
+        const response = await this.post('/user/login', data)
+        if (response.accessToken) {
+            this.setAccessToken(response.accessToken)
+            this.router.push({ name: 'Home' })
+        }
+        return response
     }
 }
