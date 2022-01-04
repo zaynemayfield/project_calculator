@@ -44,6 +44,7 @@ model project {
   name      String       @db.VarChar(100)
   user_id   Int          @db.UnsignedInt
   type      project_type @default(Public)
+  summary   String       @db.VarChar(2000)
   user      user         @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "user_id on project")
   line_item line_item[]
 
