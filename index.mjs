@@ -35,6 +35,7 @@ busboy.extend(app, {
 //Routes that don't require authentication
 app.post('/user/register', usercontroller.create.bind(usercontroller))
 app.post('/user/login', usercontroller.login.bind(usercontroller))
+app.get('/projects/public', projectcontroller.publicList.bind(projectcontroller))
 
 //Middleware for JWT
 app.use(verifytoken)
