@@ -50,6 +50,14 @@ export default class ApiClient {
         return request.projects
     }
 
+    async getPublicProjects () {
+        const request = await this.get('/projects/public')
+        if (!request?.projects) {
+            return request;
+        }
+        return request.projects
+    }
+
     register (data) {
         return this.post('/user/register', data)
     }
