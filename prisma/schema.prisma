@@ -38,12 +38,13 @@ model material {
 }
 
 model project {
-  id        Int         @id @default(autoincrement()) @db.UnsignedInt
-  createdAt DateTime    @default(now()) @db.Timestamp(0)
-  updatedAt DateTime?   @default(now()) @db.Timestamp(0)
-  name      String      @db.VarChar(100)
-  user_id   Int         @db.UnsignedInt
-  user      user        @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "user_id on project")
+  id        Int          @id @default(autoincrement()) @db.UnsignedInt
+  createdAt DateTime     @default(now()) @db.Timestamp(0)
+  updatedAt DateTime?    @default(now()) @db.Timestamp(0)
+  name      String       @db.VarChar(100)
+  user_id   Int          @db.UnsignedInt
+  type      project_type @default(Public)
+  user      user         @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "user_id on project")
   line_item line_item[]
 
   @@index([user_id], map: "user_id on project")
@@ -67,4 +68,10 @@ enum user_type {
   user
   admin
   mod
+}
+
+enum project_type {
+  Public
+  Private
+  Friends
 }

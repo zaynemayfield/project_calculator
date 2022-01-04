@@ -11,7 +11,7 @@
   "author": "Zayne Mayfield",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^3.5.0",
+    "@prisma/client": "^3.7.0",
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
