@@ -48,6 +48,7 @@ model project {
   user      user         @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "user_id on project")
   line_item line_item[]
 
+  @@unique([name, user_id], map: "no duplicate projects")
   @@index([user_id], map: "user_id on project")
 }
 
