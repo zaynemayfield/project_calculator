@@ -58,12 +58,25 @@ export default class ApiClient {
         return request.projects
     }
 
-    register (data) {
-        return this.post('/user/register', data)
+    async register (data) {
+        const response = await this.post('/user/register', data)
+        if (response.user) {
+            this.router.push({ name: 'Login'})
+        }
+        return response
+    }
+
+    async newProject (data) {
+        const response = await this.post('/projects/create', data)
+        if (response.project) {
+            this.router.push({ name: 'Project Design', params: {projectId: response.project.id}})
+        }
+        return response
     }
 
     setAccessToken (token) {
         this.accessToken = token
+        this.store.commit('accessToken', this.accessToken)
         window.localStorage.setItem('accessToken', token)
     }
 
@@ -71,8 +84,15 @@ export default class ApiClient {
         const response = await this.post('/user/login', data)
         if (response.accessToken) {
             this.setAccessToken(response.accessToken)
+            this.store.commit('isLoggedIn', true)
             this.router.push({ name: 'Home' })
         }
         return response
+    }
+
+    logout () {
+        this.setAccessToken('');
+        this.store.commit('isLoggedIn', false)
+        this.router.push({ name: 'Landing' })
     }
 }
