@@ -4,17 +4,24 @@ const prisma = new PrismaClient()
 import Helper from '../utilities/helper.mjs'
 
 class ProjectController {
+
   async create (req, res) {
     try {
+      const user_id = req.user._id
       const name = req.body.name
       if (name.length < 0){
         return new Helper(res).sendError("No Name Entered", 'name')
       }
-      const user_id = req.body.user_id
-      const project = await prisma.project.create({ data: { name: name, user_id: user_id } })
-      delete project.dataValues.user_id
+      //check if email is unique
+      const check_name = await prisma.project.findMany({where: { name: { equals: name }, user_id: {equals: user_id}} })
+      if (check_name) {
+        return new Helper(res).sendError(`You already have a project called: ${name}.`, 'name')
+      }
+      
+      const project = await prisma.project.create({ data: { name: name, summary: req.body.summary, user_id: user_id } })
       return res.send({project: project})
     } catch (error) {
+      console.log(error)
       return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
     }
   }
