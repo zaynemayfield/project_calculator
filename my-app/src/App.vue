@@ -18,13 +18,16 @@
           <ul class="navbar-nav">
 
             <!-- Only show this if user is logged in -->
-            <li class="nav-item">
+            <li v-if="$store.state.isLoggedIn" class="nav-item">
               <router-link class="nav-link" active-class="active" :to="{ name: 'Home' }">Home</router-link>
             </li>
 
-
-            <li class="nav-item">
-              <router-link class="nav-link" active-class="active" :to="{ name: 'Login' }">Log in / Sign up</router-link>
+            <!-- Do not show if user is logged in -->
+            <li v-if="!$store.state.isLoggedIn" class="nav-item">
+              <router-link class="nav-link" active-class="active" :to="{ name: 'Login' }">Login / Signup</router-link>
+            </li>
+            <li v-if="$store.state.isLoggedIn" class="nav-item">
+              <a href="#" @click.prevent="handleLogout()" class="nav-link">Logout</a>
             </li>
           </ul>
         </div>
@@ -42,16 +45,24 @@
 
 <script>
 import { useStore } from 'vuex'
+import { inject } from "@vue/runtime-core"
 export default {
   setup() {
+    const apiClient = inject("$api", {})
     const store = useStore()
+    store.dispatch('initializeAccessToken')
+    store.dispatch('initializeIsLoggedIn')
     return {
       store,
+      
+      handleLogout: () => {
+      apiClient.logout()
+      },
       dismissError: (index) => {
         const errors = store.getters.errors
         errors.splice(index, 1)
         store.commit('errors', errors)
-      }
+      },
     }
   }
 }
