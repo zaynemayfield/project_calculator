@@ -69,7 +69,7 @@ export default class ApiClient {
     async newProject (data) {
         const response = await this.post('/projects/create', data)
         if (response.project) {
-            this.router.push({ name: 'Project Design', params: {projectId: response.project.id}})
+            this.router.push({ name: 'Design Project', params: {id: response.project.id}})
         }
         return response
     }
@@ -95,4 +95,10 @@ export default class ApiClient {
         this.store.commit('isLoggedIn', false)
         this.router.push({ name: 'Landing' })
     }
+
+    redirect (name, param) {
+        console.log(name, param)
+        this.router.push({ name: name, params: {id: param}})
+    }
+
 }
