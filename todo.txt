@@ -1,0 +1,11 @@
+We have user signup and login
+WE have create project
+
+
+
+
+WE need:
+    Make the option of having the project public or private
+    create material
+    View project Public / Private /( Friend )
+
