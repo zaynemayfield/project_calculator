@@ -14,11 +14,11 @@ class ProjectController {
       }
       //check if email is unique
       const check_name = await prisma.project.findMany({where: { name: { equals: name }, user_id: {equals: user_id}} })
-      if (check_name) {
+      if (check_name.length) {
         return new Helper(res).sendError(`You already have a project called: ${name}.`, 'name')
       }
       
-      const project = await prisma.project.create({ data: { name: name, summary: req.body.summary, user_id: user_id } })
+      const project = await prisma.project.create({ data: { name: name, summary: req.body.summary, user_id: user_id, type: req.body.type } })
       return res.send({project: project})
     } catch (error) {
       console.log(error)
