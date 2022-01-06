@@ -8,7 +8,7 @@
 <ul v-if="projects.length">
   <li :key="index" v-for="(project, index) in projects">
       <!-- SHow avatar and make it a link to a page that a non-auth user can view -->
-       <a href="" @click="redirect('View Project', project.id)"  ><strong>{{ project.name }} </strong> - {{ project.summary }}</a>
+       <a href="" @click.prevent="redirect('View Project', project.id)"  ><strong>{{ project.name }} </strong> - {{ project.summary }}</a>
        
        
        </li>
