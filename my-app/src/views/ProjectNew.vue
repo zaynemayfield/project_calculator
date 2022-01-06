@@ -16,9 +16,20 @@
         <div class="mb-3">
           <label for="Summary" class="form-label">Summary</label>
   <textarea class="form-control" id="summary" name="summary" rows="3" maxlength="1900"></textarea>
-
         </div>
-        <div class="row align-items-center">
+        <div class="form-check">
+  <input class="form-check-input" type="radio" name="type" id="type1" value="Public" checked>
+  <label class="form-check-label" for="type1">
+    Public
+  </label>
+</div>
+<div class="form-check">
+  <input class="form-check-input" type="radio" name="type" id="type2" value="Private">
+  <label class="form-check-label" for="type2">
+    Private
+  </label>
+</div>
+        <div class="row align-items-center mt-3">
           <div class="col">
             <button type="submit" class="btn btn-primary">Create New Project</button>
           </div>
