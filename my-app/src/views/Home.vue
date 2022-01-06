@@ -7,7 +7,7 @@
 <h4 v-if="projects.length">Your Projects</h4>
 <ul v-if="projects.length">
   <!-- make the link clickable -->
-  <li :key="index" v-for="(project, index) in projects">{{ project.name }}</li>
+  <li :key="index" v-for="(project, index) in projects"> <a href="" @click.prevent="redirect('Design Project', project.id)"> <strong>{{ project.name }}</strong> - {{ project.summary }}</a></li>
 </ul>
 </div>
 </template>
@@ -23,7 +23,10 @@ export default {
     }
     onMounted(getProjects)
     return {
-      projects
+      projects,
+      redirect: (name, param) => {
+        apiClient.redirect(name, param)
+      }
     }
   }
 }
