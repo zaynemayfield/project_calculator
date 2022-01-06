@@ -98,7 +98,12 @@ export default class ApiClient {
 
     redirect (name, param) {
         console.log(name, param)
-        this.router.push({ name: name, params: {id: param}})
+        if (param) {
+            this.router.push({ name: name, params: {id: param}})
+        } else {
+            this.router.push({ name: name})
+        }
+        
     }
 
 }
