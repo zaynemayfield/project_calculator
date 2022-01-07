@@ -12,7 +12,7 @@
   <div class="col">
     <button type="button" class="btn btn-primary" @click="redirect('New Project','')">Create New Project</button>
   </div>
-  
+
 </div>
 
 <ul v-if="projects.length">
