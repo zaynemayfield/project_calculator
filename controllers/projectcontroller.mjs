@@ -37,12 +37,15 @@ class ProjectController {
   }
 
   async read (req, res) {
+    const user_id = req.user._id
     const id = parseInt(req.params.id)
     const project = await prisma.project.findUnique({ where: {id: id}})
     if (!project) {
       return new Helper(res).sendError('No project with that ID Exists', 'id')
     }
-    delete project.dataValues.user_id
+    if (project.user_id != user_id) {
+      return new Helper(res).sendError('You do not have permission to access this project', 'user_id')
+    }
     return res.send({project: project})
   }
 
