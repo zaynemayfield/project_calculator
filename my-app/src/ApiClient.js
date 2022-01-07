@@ -33,25 +33,34 @@ export default class ApiClient {
         return response
     }
 
-    get (url) {
-        return this.request(url, null)
-    }
+    //process (type, url, data = null) {
+    //    return this.request(type, url, data)
+    //}
 
-    post (url, data) {
-        console.log(data)
-        return this.request(url, data)
-    }
+    //post (url, data) {
+    //    console.log(data)
+    //    return this.request(url, data)
+    //}
 
     async getProjects () {
-        const request = await this.get('/projects')
+        const request = await this.request('/projects')
         if (!request?.projects) {
             return request;
         }
         return request.projects
     }
 
+    async getProject (projectId) {
+        const url = '/project/'+projectId
+        const request = await this.request(url)
+        if (!request?.project) {
+            return request;
+        }
+        return request.project
+    }
+
     async getPublicProjects () {
-        const request = await this.get('/projects/public')
+        const request = await this.request('/projects/public')
         if (!request?.projects) {
             return request;
         }
@@ -59,7 +68,7 @@ export default class ApiClient {
     }
 
     async register (data) {
-        const response = await this.post('/user/register', data)
+        const response = await this.request('/user/register', data)
         if (response.user) {
             this.router.push({ name: 'Login'})
         }
@@ -67,7 +76,7 @@ export default class ApiClient {
     }
 
     async newProject (data) {
-        const response = await this.post('/projects/create', data)
+        const response = await this.request('/projects/create', data)
         if (response.project) {
             this.router.push({ name: 'Design Project', params: {id: response.project.id}})
         }
@@ -81,7 +90,7 @@ export default class ApiClient {
     }
 
     async login (data) {
-        const response = await this.post('/user/login', data)
+        const response = await this.request('/user/login', data)
         if (response.accessToken) {
             this.setAccessToken(response.accessToken)
             this.store.commit('isLoggedIn', true)
@@ -97,13 +106,12 @@ export default class ApiClient {
     }
 
     redirect (name, param) {
-        console.log(name, param)
         if (param) {
             this.router.push({ name: name, params: {id: param}})
         } else {
             this.router.push({ name: name})
         }
-        
+
     }
 
 }
