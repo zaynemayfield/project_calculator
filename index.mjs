@@ -10,6 +10,7 @@ javascript will do all imports before any other code, so
 import usercontroller from './controllers/usercontroller.mjs'
 import projectcontroller from './controllers/projectcontroller.mjs'
 import materialcontroller from './controllers/materialcontroller.mjs'
+import lineitemcontroller from './controllers/lineitemcontroller.mjs'
 import verifytoken from './utilities/verifytoken.mjs'
 
 import busboy from 'express-busboy'
@@ -46,17 +47,27 @@ app.get('/user/:id', usercontroller.read.bind(usercontroller))
 app.get('/deleteuser/:id', usercontroller.delete.bind(usercontroller))
 
 // PROJECT
-app.post('/projects/create', projectcontroller.create.bind(projectcontroller))
+app.post('/project/create', projectcontroller.create.bind(projectcontroller))
 app.get('/projects', projectcontroller.list.bind(projectcontroller))
 app.get('/project/:id', projectcontroller.read.bind(projectcontroller))
-app.get('/deleteproject/:id', projectcontroller.delete.bind(projectcontroller))
+app.post('/project/update/:id', projectcontroller.update.bind(projectcontroller))
+app.get('/project/delete/:id', projectcontroller.delete.bind(projectcontroller))
 
 // MATERIAL
-app.post('/creatematerial', materialcontroller.create.bind(materialcontroller))
-app.get('/material/:id', materialcontroller.read.bind(materialcontroller))
-app.get('/deletematerial/:id', materialcontroller.delete.bind(materialcontroller))
+app.post('/project/material/create', materialcontroller.create.bind(materialcontroller))
+app.get('/project/material/:id', materialcontroller.read.bind(materialcontroller))
+app.get('/project/materials/:id', materialcontroller.readAll.bind(materialcontroller))
+app.post('/project/material/update/:id', materialcontroller.update.bind(materialcontroller))
+app.get('/project/material/delete/:id', materialcontroller.delete.bind(materialcontroller))
 
-//All
+//Line Items
+app.post('/project/material/lineitem/create', lineitemcontroller.create.bind(lineitemcontroller))
+app.get('/project/material/lineitems/:id', lineitemcontroller.readAll.bind(lineitemcontroller))
+app.get('/project/material/lineitem/:id', lineitemcontroller.read.bind(lineitemcontroller))
+app.post('/project/material/lineitem/update/:id', lineitemcontroller.update.bind(lineitemcontroller))
+app.get('/project/material/lineitem/delete/:id', lineitemcontroller.delete.bind(lineitemcontroller))
+
+//All 
 app.all('*',(req,res) => {
   res.status(404).send('<h1>Not Found</h1>')
 })
