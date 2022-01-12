@@ -12,7 +12,7 @@ class ProjectController {
       if (name.length < 0){
         return new Helper(res).sendError("No Name Entered", 'name')
       }
-      //check if email is unique
+      //check if name is unique
       const check_name = await prisma.project.findMany({where: { name: { equals: name }, user_id: {equals: user_id}} })
       if (check_name.length) {
         return new Helper(res).sendError(`You already have a project called: ${name}.`, 'name')
@@ -47,6 +47,10 @@ class ProjectController {
       return new Helper(res).sendError('You do not have permission to access this project', 'user_id')
     }
     return res.send({project: project})
+  }
+
+  async update (req, res) {
+
   }
 
   async delete (req, res) {
