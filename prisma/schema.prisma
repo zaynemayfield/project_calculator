@@ -13,13 +13,16 @@ model line_item {
   updatedAt   DateTime? @default(now()) @db.Timestamp(0)
   quantity    Int       @default(0) @db.UnsignedInt
   notes       String?   @db.Text
+  user_id     Int       @db.UnsignedInt
   project_id  Int       @db.UnsignedInt
   material_id Int       @db.UnsignedInt
   material    material  @relation(fields: [material_id], references: [id], onDelete: NoAction, map: "material_id on line_item")
   project     project   @relation(fields: [project_id], references: [id], onDelete: NoAction, map: "project_id on line_item")
+  user        user      @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "user_id on line_item")
 
   @@index([material_id], map: "material_id on line_item")
   @@index([project_id], map: "project_id on line_item")
+  @@index([user_id], map: "user_id on line_item")
 }
 
 model material {
@@ -31,9 +34,12 @@ model material {
   price       Decimal?    @default(0.00) @db.Decimal(10, 2)
   description String?     @db.Text
   user_id     Int         @db.UnsignedInt
+  project_id  Int         @db.UnsignedInt
+  project     project     @relation(fields: [project_id], references: [id], onDelete: NoAction, map: "project_id on material")
   user        user        @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "user_id on material")
   line_item   line_item[]
 
+  @@index([project_id], map: "project_id on material")
   @@index([user_id], map: "user_id on material")
 }
 
@@ -42,26 +48,28 @@ model project {
   createdAt DateTime     @default(now()) @db.Timestamp(0)
   updatedAt DateTime?    @default(now()) @db.Timestamp(0)
   name      String       @db.VarChar(100)
-  user_id   Int          @db.UnsignedInt
   type      project_type @default(Public)
   summary   String       @db.VarChar(2000)
+  user_id   Int          @db.UnsignedInt
   user      user         @relation(fields: [user_id], references: [id], onDelete: NoAction, map: "user_id on project")
   line_item line_item[]
+  material  material[]
 
   @@unique([name, user_id], map: "no duplicate projects")
   @@index([user_id], map: "user_id on project")
 }
 
 model user {
-  id        Int        @id @default(autoincrement()) @db.UnsignedInt
-  createdAt DateTime   @default(now()) @db.Timestamp(0)
-  updatedAt DateTime?  @default(now()) @db.Timestamp(0)
-  email     String     @unique @db.VarChar(255)
-  password  String     @db.VarChar(255)
-  token     String?    @db.VarChar(255)
-  avatar    String?    @db.VarChar(255)
-  deleted   Boolean    @default(false)
-  type      user_type  @default(user)
+  id        Int         @id @default(autoincrement()) @db.UnsignedInt
+  createdAt DateTime    @default(now()) @db.Timestamp(0)
+  updatedAt DateTime?   @default(now()) @db.Timestamp(0)
+  email     String      @unique @db.VarChar(255)
+  password  String      @db.VarChar(255)
+  token     String?     @db.VarChar(255)
+  avatar    String?     @db.VarChar(255)
+  deleted   Boolean     @default(false)
+  type      user_type   @default(user)
+  line_item line_item[]
   material  material[]
   project   project[]
 }
