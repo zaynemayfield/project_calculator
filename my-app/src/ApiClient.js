@@ -27,6 +27,7 @@ export default class ApiClient {
             return this.router.push({ name: 'Login'})
         }
         const response = await request.json()
+        //console.log(response)
         if (response.errors) {
             this.store.commit('errors', response.errors)
         }
@@ -45,7 +46,7 @@ export default class ApiClient {
     async getProjects () {
         const request = await this.request('/projects')
         if (!request?.projects) {
-            return request;
+            return request
         }
         return request.projects
     }
@@ -57,6 +58,37 @@ export default class ApiClient {
             return request;
         }
         return request.project
+    }
+
+    async createMaterial (data) {
+        console.log(data)
+        const response = await this.request('/project/material/create', data)
+        if (!response?.material) {
+            return response
+        }
+        //console.log(response.material)
+        return response.material
+    }
+
+    async getMaterials(projectId) {
+        const url = '/project/materials/'+projectId
+        const request = await this.request(url)
+        if (!request?.materials) {
+            return request
+        }
+        //console.log(request.materials)
+        return request.materials
+    }
+
+    async getLineItems(projectId) {
+        console.log(projectId)
+        const url = '/project/material/lineitems/'+projectId
+        const request = await this.request(url)
+        if (!request?.lineItems) {
+            return request
+        }
+        console.log(request.lineItems)
+        return request.lineItems
     }
 
     async getPublicProjects () {
@@ -76,7 +108,7 @@ export default class ApiClient {
     }
 
     async newProject (data) {
-        const response = await this.request('/projects/create', data)
+        const response = await this.request('/project/create', data)
         if (response.project) {
             this.router.push({ name: 'Design Project', params: {id: response.project.id}})
         }
