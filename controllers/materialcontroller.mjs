@@ -46,26 +46,36 @@ async readAll (req, res) {
 }
 
 async update (req, res) {
-
+  const material_id = parseInt(req.params.id)
+  const updateMaterial = await prisma.material.update({
+    where: {
+      id: material_id,
+    },
+    data: {
+      name: req.body.name,
+      url: req.body.url,
+      description: req.body.description,
+      price: req.body.price,
+    },
+  })
+  if (!updateMaterial) {
+    return new Helper(res).sendError('Material failed to update', 'id')
+  }
+  return res.send({updateMaterial: updateMaterial})
 }
 
 async delete (req, res) {
   const id = parseInt(req.params.id)
-  const materialid = await prisma.material.findUnique({ where: {id: id}})
-  if (!materialid) {
-    return new Helper(res).sendError('No material with that ID Exists', 'id')
-  }
   try {
-    await prisma.material.delete({
-      where: { id: materialid.id },
-      data: { delete: 'Y'}
-    })
+  const material = await prisma.material.delete({ where: {id: id}})
+  const newmaterial = id
+  return res.send({material: newmaterial})
   } catch (error) {
-    return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
+    console.log(error)
   }
   
   
-  return res.send({materialid: materialid})
+  
 }
 
 }
