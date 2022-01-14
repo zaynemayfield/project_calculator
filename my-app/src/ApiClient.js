@@ -27,21 +27,11 @@ export default class ApiClient {
             return this.router.push({ name: 'Login'})
         }
         const response = await request.json()
-        //console.log(response)
         if (response.errors) {
             this.store.commit('errors', response.errors)
         }
         return response
     }
-
-    //process (type, url, data = null) {
-    //    return this.request(type, url, data)
-    //}
-
-    //post (url, data) {
-    //    console.log(data)
-    //    return this.request(url, data)
-    //}
 
     async getProjects () {
         const request = await this.request('/projects')
@@ -61,12 +51,10 @@ export default class ApiClient {
     }
 
     async createMaterial (data) {
-        console.log(data)
         const response = await this.request('/project/material/create', data)
         if (!response?.material) {
             return response
         }
-        //console.log(response.material)
         return response.material
     }
 
@@ -76,19 +64,58 @@ export default class ApiClient {
         if (!request?.materials) {
             return request
         }
-        //console.log(request.materials)
         return request.materials
     }
 
-    async getLineItems(projectId) {
-        console.log(projectId)
-        const url = '/project/material/lineitems/'+projectId
+    async updateMaterial (updateId, data) {
+        const response = await this.request('/project/material/update/'+updateId, data)
+        if (!response?.updateMaterial) {
+            return response
+        }
+        return response.updateMaterial
+    }
+
+    async deleteMaterial(materialId) {
+        const url = '/project/material/delete/'+materialId
         const request = await this.request(url)
-        if (!request?.lineItems) {
+        if (!request?.material) {
             return request
         }
-        console.log(request.lineItems)
-        return request.lineItems
+        return request.material
+    }
+
+    async updateLineItem (data) {
+        const response = await this.request('/project/material/lineitem/update/', data)
+        if (!response?.updateLineItem) {
+            return response
+        }
+        return response.updateLineItem
+    }
+
+    async duplicateLineItem (id) {
+        const response = await this.request('/project/material/lineitem/duplicate/'+id)
+        if (!response?.duplicateLineItem) {
+            return response
+        }
+        return response.duplicateLineItem
+    }
+
+    async deleteLineItem(lineItemId) {
+        const url = '/project/material/lineitem/delete/'+lineItemId
+        const request = await this.request(url)
+        if (!request?.deleteLineItem) {
+            return request
+        }
+        return request.deleteLineItem
+    }
+
+    async getMaterialLines(projectId) {
+        const url = '/project/material/lineitems/both/'+projectId
+        const request = await this.request(url)
+        if (!request?.materialLine) {
+            return request
+        }
+        return request.materialLine
     }
 
     async getPublicProjects () {
