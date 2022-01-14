@@ -62,9 +62,11 @@ app.get('/project/material/delete/:id', materialcontroller.delete.bind(materialc
 
 //Line Items
 app.post('/project/material/lineitem/create', lineitemcontroller.create.bind(lineitemcontroller))
+app.get('/project/material/lineitems/both/:id', lineitemcontroller.both.bind(lineitemcontroller))
 app.get('/project/material/lineitems/:id', lineitemcontroller.readAll.bind(lineitemcontroller))
 app.get('/project/material/lineitem/:id', lineitemcontroller.read.bind(lineitemcontroller))
-app.post('/project/material/lineitem/update/:id', lineitemcontroller.update.bind(lineitemcontroller))
+app.post('/project/material/lineitem/update/', lineitemcontroller.update.bind(lineitemcontroller))
+app.get('/project/material/lineitem/duplicate/:id', lineitemcontroller.duplicate.bind(lineitemcontroller))
 app.get('/project/material/lineitem/delete/:id', lineitemcontroller.delete.bind(lineitemcontroller))
 
 //All 
