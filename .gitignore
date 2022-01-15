@@ -1,5 +1,5 @@
 node_modules/
 package-lock.json
-my-app/node_modules/
+../vue/my-app/node_modules/
 .env
 resources/
