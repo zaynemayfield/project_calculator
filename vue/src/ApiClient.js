@@ -1,6 +1,6 @@
 export default class ApiClient {
     constructor (store, router) {
-        this.baseUrl = 'http://localhost:3000'
+        this.baseUrl = 'http://localhost:5000'
         this.store = store
         this.router = router
         this.accessToken = window.localStorage.getItem('accessToken')
