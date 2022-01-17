@@ -3,15 +3,15 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 /*
 javascript will do all imports before any other code, so
- even though this line comes before import usercontroller,
+ even though this line comes before import userController,
  it doesn't actually get run until after. The solution is
  to make a module that calls dotenv.config
  */
-import usercontroller from './controllers/usercontroller.mjs'
-import projectcontroller from './controllers/projectcontroller.mjs'
-import materialcontroller from './controllers/materialcontroller.mjs'
-import lineitemcontroller from './controllers/lineitemcontroller.mjs'
-import verifytoken from './utilities/verifytoken.mjs'
+import userController from './controllers/userController.mjs'
+import projectController from './controllers/projectController.mjs'
+import materialController from './controllers/materialController.mjs'
+import lineItemController from './controllers/lineItemController.mjs'
+import verifyToken from './utilities/verifyToken.mjs'
 
 import busboy from 'express-busboy'
 
@@ -33,44 +33,43 @@ busboy.extend(app, {
     'image/png'
   ]
 })
-//Routes that don't require authentication
-app.post('/user/register', usercontroller.create.bind(usercontroller))
-app.post('/user/login', usercontroller.login.bind(usercontroller))
-app.get('/projects/public', projectcontroller.publicList.bind(projectcontroller))
+// Routes that don't require authentication
+app.post('/user/register', userController.create.bind(userController))
+app.post('/user/login', userController.login.bind(userController))
+app.get('/projects/public', projectController.publicList.bind(projectController))
 
-//Middleware for JWT
-app.use(verifytoken)
-
+// Middleware for JWT
+app.use(verifyToken)
 
 // USER
-app.get('/user/:id', usercontroller.read.bind(usercontroller))
-app.get('/deleteuser/:id', usercontroller.delete.bind(usercontroller))
+app.get('/user/:id', userController.read.bind(userController))
+app.get('/user/delete/:id', userController.delete.bind(userController))
 
 // PROJECT
-app.post('/project/create', projectcontroller.create.bind(projectcontroller))
-app.get('/projects', projectcontroller.list.bind(projectcontroller))
-app.get('/project/:id', projectcontroller.read.bind(projectcontroller))
-app.post('/project/update/:id', projectcontroller.update.bind(projectcontroller))
-app.get('/project/delete/:id', projectcontroller.delete.bind(projectcontroller))
+app.post('/project/create', projectController.create.bind(projectController))
+app.get('/projects', projectController.list.bind(projectController))
+app.get('/project/:id', projectController.read.bind(projectController))
+app.post('/project/update/:id', projectController.update.bind(projectController))
+app.get('/project/delete/:id', projectController.delete.bind(projectController))
 
 // MATERIAL
-app.post('/project/material/create', materialcontroller.create.bind(materialcontroller))
-app.get('/project/material/:id', materialcontroller.read.bind(materialcontroller))
-app.get('/project/materials/:id', materialcontroller.readAll.bind(materialcontroller))
-app.post('/project/material/update/:id', materialcontroller.update.bind(materialcontroller))
-app.get('/project/material/delete/:id', materialcontroller.delete.bind(materialcontroller))
+app.post('/project/material/create', materialController.create.bind(materialController))
+app.get('/project/material/:id', materialController.read.bind(materialController))
+app.get('/project/materials/:id', materialController.readAll.bind(materialController))
+app.post('/project/material/update/:id', materialController.update.bind(materialController))
+app.get('/project/material/delete/:id', materialController.delete.bind(materialController))
 
-//Line Items
-app.post('/project/material/lineitem/create', lineitemcontroller.create.bind(lineitemcontroller))
-app.get('/project/material/lineitems/both/:id', lineitemcontroller.both.bind(lineitemcontroller))
-app.get('/project/material/lineitems/:id', lineitemcontroller.readAll.bind(lineitemcontroller))
-app.get('/project/material/lineitem/:id', lineitemcontroller.read.bind(lineitemcontroller))
-app.post('/project/material/lineitem/update/', lineitemcontroller.update.bind(lineitemcontroller))
-app.get('/project/material/lineitem/duplicate/:id', lineitemcontroller.duplicate.bind(lineitemcontroller))
-app.get('/project/material/lineitem/delete/:id', lineitemcontroller.delete.bind(lineitemcontroller))
+// Line Items
+app.post('/project/material/line-item/create', lineItemController.create.bind(lineItemController))
+app.get('/project/material/line-items/both/:id', lineItemController.both.bind(lineItemController))
+app.get('/project/material/line-items/:id', lineItemController.readAll.bind(lineItemController))
+app.get('/project/material/line-item/:id', lineItemController.read.bind(lineItemController))
+app.post('/project/material/line-item/update/', lineItemController.update.bind(lineItemController))
+app.get('/project/material/line-item/duplicate/:id', lineItemController.duplicate.bind(lineItemController))
+app.get('/project/material/line-item/delete/:id', lineItemController.delete.bind(lineItemController))
 
-//All 
-app.all('*',(req,res) => {
+// All
+app.all('*', (req, res) => {
   res.status(404).send('<h1>Not Found</h1>')
 })
 
