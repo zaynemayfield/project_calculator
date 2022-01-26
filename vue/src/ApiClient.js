@@ -85,7 +85,7 @@ export default class ApiClient {
     }
 
     async updateLineItem (data) {
-        const response = await this.request('/project/material/lineitem/update/', data)
+        const response = await this.request('/project/material/line-item/update/', data)
         if (!response?.updateLineItem) {
             return response
         }
@@ -93,7 +93,7 @@ export default class ApiClient {
     }
 
     async duplicateLineItem (id) {
-        const response = await this.request('/project/material/lineitem/duplicate/'+id)
+        const response = await this.request('/project/material/line-item/duplicate/'+id)
         if (!response?.duplicateLineItem) {
             return response
         }
@@ -101,7 +101,7 @@ export default class ApiClient {
     }
 
     async deleteLineItem(lineItemId) {
-        const url = '/project/material/lineitem/delete/'+lineItemId
+        const url = '/project/material/line-item/delete/'+lineItemId
         const request = await this.request(url)
         if (!request?.deleteLineItem) {
             return request
@@ -110,7 +110,7 @@ export default class ApiClient {
     }
 
     async getMaterialLines(projectId) {
-        const url = '/project/material/lineitems/both/'+projectId
+        const url = '/project/material/line-items/both/'+projectId
         const request = await this.request(url)
         if (!request?.materialLine) {
             return request

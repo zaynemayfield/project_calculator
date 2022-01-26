@@ -7,6 +7,7 @@ class LineItemController {
   async createBlank (user, project, material) {
     try {
       const blankLineItem = await prisma.line_item.create({ data: { user_id: user, project_id: project, material_id: material } })
+      console.log(blankLineItem)
       return blankLineItem
     } catch (error) {
       console.log(error)

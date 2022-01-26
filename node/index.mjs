@@ -1,6 +1,5 @@
 import express from 'express'
 import cors from 'cors'
-import dotenv from 'dotenv'
 /*
 javascript will do all imports before any other code, so
  even though this line comes before import userController,

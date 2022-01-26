@@ -14,11 +14,16 @@ class MaterialController {
       }
       const userId = req.user._id
       const url = req.body.url
-      const price = req.body.price
+      let price = req.body.price
+      if (!req.body.price) {
+        price = 0.00
+      }
       const description = req.body.description
       const projectId = parseInt(req.body.project_id)
       const material = await prisma.material.create({ data: { name: name, user_id: userId, url: url, price: price, description: description, project_id: projectId } })
+      console.log(material)
       const blankLineItem = await lineItemController.createBlank(material.user_id, material.project_id, material.id)
+      console.log(blankLineItem)
       if (!blankLineItem) {
         return new Helper(res).sendError('could not create Line Item for Material', 'name')
       }
@@ -36,6 +41,7 @@ class MaterialController {
       return new Helper(res).sendError('No material with that ID Exists', 'id')
     }
     delete material.dataValues.user_id
+    console.log(material)
     return res.send({ material: material })
   }
 
