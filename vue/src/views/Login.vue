@@ -31,7 +31,9 @@
             <button type="submit" class="btn btn-primary">Login</button>
           </div>
           <div class="col">
-            <router-link :to="{ name: 'Register' }">New user? Register.</router-link>
+            <router-link :to="{ name: 'Register' }"
+              >New user? Register.</router-link
+            >
           </div>
         </div>
       </form>
@@ -39,17 +41,11 @@
   </div>
 </template>
 
-<script>
-import { inject } from "@vue/runtime-core"
-export default {
-  setup() {
-    const apiClient = inject("$api", {})
-    return {
-      handleLogin: (e) => {
-        const data = new FormData(e.target)
-        apiClient.login(data)
-      }
-    }
-  }
+<script setup>
+import { inject } from '@vue/runtime-core'
+const apiClient = inject('$api', {})
+const handleLogin = (e) => {
+  const data = new FormData(e.target)
+  apiClient.login(data)
 }
 </script>

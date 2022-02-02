@@ -109,13 +109,13 @@ export default class ApiClient {
         return request.deleteLineItem
     }
 
-    async getMaterialLines(projectId) {
+    async getLineItemsWithMaterials(projectId) {
         const url = '/project/material/line-items/both/'+projectId
         const request = await this.request(url)
-        if (!request?.materialLine) {
+        if (!request?.lineItemsWithMaterials) {
             return request
         }
-        return request.materialLine
+        return request.lineItemsWithMaterials
     }
 
     async getPublicProjects () {
