@@ -12,9 +12,7 @@
       <ul v-if="projects.length">
         <li :key="index" v-for="(project, index) in projects">
           <!-- SHow avatar and make it a link to a page that a non-auth user can view -->
-          <a href="" @click.prevent="redirect('View Project', project.id)"
-            ><strong>{{ project.name }} </strong> - {{ project.summary }}</a
-          >
+          <router-link :to="{ name: 'View Project', params: { id: project.id } }"><strong>{{ project.name }} </strong> - {{ project.summary }}</router-link>
         </li>
       </ul>
     </div>
@@ -29,8 +27,4 @@ const getPublicProjects = async () => {
   projects.value = await apiClient.getPublicProjects()
 }
 onMounted(getPublicProjects)
-const redirect = (name, param) => {
-  apiClient.redirect(name, param)
-}
-
 </script>

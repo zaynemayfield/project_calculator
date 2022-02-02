@@ -7,22 +7,22 @@
       </div>
 
       <div class="col">
-        <button
-          type="button"
-          class="btn btn-primary"
-          @click="redirect('New Project', '')"
-        >
-          Create New Project
-        </button>
+        <router-link :to="{ name: 'New Project'}">
+          <button
+            type="button"
+            class="btn btn-primary"
+          >
+            Create New Project
+          </button>
+        </router-link>
       </div>
     </div>
 
     <ul v-if="projects.length">
       <!-- make the link clickable -->
       <li :key="index" v-for="(project, index) in projects">
-        <a href="" @click.prevent="redirect('Design Project', project.id)">
-          <strong>{{ project.name }}</strong> - {{ project.summary }}</a
-        >
+        <router-link :to="{ name: 'Design Project', params: { id: project.id } }">
+          <strong>{{ project.name }}</strong> - {{ project.summary }}</router-link>
       </li>
     </ul>
   </div>
@@ -34,9 +34,6 @@ const apiClient = inject('$api', {})
 const projects = ref([])
 const getProjects = async () => {
   projects.value = await apiClient.getProjects()
-}
-const redirect = (name, param) => {
-  apiClient.redirect(name, param)
 }
 onMounted(getProjects)
 </script>
