@@ -43,9 +43,14 @@
 
 <script setup>
 import { inject } from '@vue/runtime-core'
+const emit = defineEmits(['login'])
 const apiClient = inject('$api', {})
-const handleLogin = (e) => {
+const handleLogin = async (e) => {
   const data = new FormData(e.target)
-  apiClient.login(data)
+  const loginResponse = await apiClient.login(data)
+  if (loginResponse?.accessToken) {
+    // TODO: emit login event
+    emit('login')
+  }
 }
 </script>

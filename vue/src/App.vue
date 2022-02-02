@@ -19,7 +19,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
             <!-- Only show this if user is logged in -->
-            <li v-if="$store.state.isLoggedIn" class="nav-item">
+            <li v-if="isLoggedIn" class="nav-item">
               <router-link
                 class="nav-link"
                 active-class="active"
@@ -30,7 +30,7 @@
             </li>
 
             <!-- Do not show if user is logged in -->
-            <li v-if="!$store.state.isLoggedIn" class="nav-item">
+            <li v-if="!isLoggedIn" class="nav-item">
               <router-link
                 class="nav-link"
                 active-class="active"
@@ -40,7 +40,7 @@
                 </router-link
               >
             </li>
-            <li v-if="$store.state.isLoggedIn" class="nav-item">
+            <li v-if="isLoggedIn" class="nav-item">
               <a href="#" @click.prevent="handleLogout()" class="nav-link">Logout</a
               >
             </li>
@@ -64,19 +64,23 @@
           aria-label="Close"
         ></button>
       </div>
-      <router-view />
+      <router-view @login="handleLogin" />
     </div>
   </div>
 </template>
 
 <script setup>
 import { useStore } from 'vuex'
-import { inject } from '@vue/runtime-core'
+import { inject, ref } from '@vue/runtime-core'
 const apiClient = inject('$api', {})
 const store = useStore()
 store.dispatch('initializeAccessToken')
 store.dispatch('initializeIsLoggedIn')
+const handleLogin = () => {
+  isLoggedIn.value = true
+}
 const handleLogout = () => {
+  isLoggedIn.value = false
   apiClient.logout()
 }
 const dismissError = (index) => {
@@ -84,6 +88,7 @@ const dismissError = (index) => {
   errors.splice(index, 1)
   store.commit('errors', errors)
 }
+const isLoggedIn = ref(apiClient.isLoggedIn())
 </script>
 
 <style lang="scss">
