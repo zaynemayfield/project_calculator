@@ -74,6 +74,7 @@ class MaterialController {
   }
 
   async delete (req, res) {
+    // check for permission to delete
     const id = parseInt(req.params.id)
     try {
       await prisma.material.delete({ where: { id: id } })

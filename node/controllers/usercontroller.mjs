@@ -126,6 +126,7 @@ class UserController {
   }
 
   async delete (req, res) {
+    // check for permission to delete
     const id = parseInt(req.params.id)
     const userId = await prisma.user.findUnique({ where: { id: id } })
     if (!userId) {
@@ -134,7 +135,7 @@ class UserController {
     try {
       await prisma.user.update({
         where: { id: userId.id },
-        data: { deleted: 'Y' }
+        data: { deleted: true }
       })
     } catch (error) {
       return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })

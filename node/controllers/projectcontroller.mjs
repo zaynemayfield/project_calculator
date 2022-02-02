@@ -5,22 +5,19 @@ const prisma = new PrismaClient()
 
 class ProjectController {
   async create (req, res) {
+    const userId = req.user._id
+    const name = req.body.name
+    if (name.length < 0) {
+      return new Helper(res).sendError('No Name Entered', 'name')
+    }
     try {
-      const userId = req.user._id
-      const name = req.body.name
-      if (name.length < 0) {
-        return new Helper(res).sendError('No Name Entered', 'name')
-      }
-      // check if name is unique
-      const checkName = await prisma.project.findMany({ where: { name: { equals: name }, user_id: { equals: userId } } })
-      if (checkName.length) {
-        return new Helper(res).sendError(`You already have a project called: ${name}.`, 'name')
-      }
       const project = await prisma.project.create({ data: { name: name, summary: req.body.summary, user_id: userId, type: req.body.type } })
       return res.send({ project: project })
     } catch (error) {
       console.log(error)
-      return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
+      // Check DB error to make sure project name is unique and reply
+      // return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
+      // return new Helper(res).sendError(`You already have a project called: ${name}.`, 'name')
     }
   }
 
@@ -52,6 +49,7 @@ class ProjectController {
   }
 
   async delete (req, res) {
+    // check for permission to delete
     const id = parseInt(req.params.id)
     const projectId = await prisma.project.findUnique({ where: { id: id } })
     if (!projectId) {

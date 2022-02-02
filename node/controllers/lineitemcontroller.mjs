@@ -33,20 +33,13 @@ class LineItemController {
   }
 
   async duplicate (req, res) {
-    try {
-      const id = parseInt(req.params.id)
-      const lineItem = await prisma.line_item.findUnique({ where: { id: id } })
-      if (!lineItem) {
-        return
-      }
-      const duplicateLineItem = await prisma.line_item.create({ data: { quantity: lineItem.quantity, user_id: lineItem.user_id, notes: lineItem.notes, project_id: lineItem.project_id, material_id: lineItem.material_id } })
-      if (!duplicateLineItem) {
-        return
-      }
-      return res.send({ duplicateLineItem: duplicateLineItem })
-    } catch (error) {
-      console.log(error)
+    const id = parseInt(req.params.id)
+    const lineItem = await prisma.line_item.findUnique({ where: { id: id } })
+    if (!lineItem) {
+      return
     }
+    const duplicateLineItem = await prisma.line_item.create({ data: { quantity: lineItem.quantity, user_id: lineItem.user_id, notes: lineItem.notes, project_id: lineItem.project_id, material_id: lineItem.material_id } })
+    return res.send({ duplicateLineItem: duplicateLineItem })
   }
 
   async read (req, res) {
@@ -61,11 +54,11 @@ class LineItemController {
 
   async both (req, res) {
     const projectId = parseInt(req.params.id)
-    const materialLine = await prisma.line_item.findMany({ where: { project_id: projectId }, include: { material: { select: { name: true, url: true, price: true, description: true } } }, orderBy: { updatedAt: 'desc' } })
-    if (!materialLine) {
+    const lineItemsWithMaterials = await prisma.line_item.findMany({ where: { project_id: projectId }, include: { material: { select: { name: true, url: true, price: true, description: true } } }, orderBy: { updatedAt: 'desc' } })
+    if (!lineItemsWithMaterials) {
       return new Helper(res).sendError('No material and Line Item with that ID Exists', 'id')
     }
-    return res.send({ materialLine: materialLine })
+    return res.send({ lineItemsWithMaterials: lineItemsWithMaterials })
   }
 
   async readAll (req, res) {
@@ -81,29 +74,27 @@ class LineItemController {
   async update (req, res) {
     const id = parseInt(req.body.id)
     const quantity = parseInt(req.body.quantity)
-    const updateLineItem = await prisma.line_item.update({
-      where: {
-        id: id
-      },
-      data: {
-        quantity: quantity,
-        notes: req.body.notes
-      }
-    })
-    if (!updateLineItem) {
+    try {
+      const updateLineItem = await prisma.line_item.update({
+        where: {
+          id: id
+        },
+        data: {
+          quantity: quantity,
+          notes: req.body.notes
+        }
+      })
+      return res.send({ updateLineItem: updateLineItem })
+    } catch (error) {
       return new Helper(res).sendError('Line Item failed to update', 'id')
     }
-    return res.send({ updateLineItem: updateLineItem })
   }
 
   async delete (req, res) {
+    // check for permission to delete
     const id = parseInt(req.params.id)
-    try {
-      await prisma.line_item.delete({ where: { id: id } })
-      return res.send({ deleteLineItem: id })
-    } catch (error) {
-      console.log(error)
-    }
+    await prisma.line_item.delete({ where: { id: id } })
+    return res.send({ deleteLineItem: id })
   }
 }
 
