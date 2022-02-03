@@ -155,7 +155,7 @@
         </div>
         <div class="col">Total Project Cost: {{ totalProjectCost() }}</div>
         <div class="col">
-          Number of Items: {{ lineItemsWithMaterials.length }}
+          Number of Items: {{ project.line_item.length }}
         </div>
       </div>
     </div>
@@ -193,7 +193,7 @@
     <!-- End check delete -->
 
     <!-- If no Materials -->
-    <div class="border rounded p-3" v-if="!lineItemsWithMaterials">
+    <div class="border rounded p-3" v-if="!project.line_item.length">
       <h4>Create a Material to get started!</h4>
     </div>
     <!-- END no Materials -->
@@ -203,7 +203,7 @@
     <div
       class="border rounded p-3 mb-2"
       :key="index"
-      v-for="(material, index) in lineItemsWithMaterials"
+      v-for="(material, index) in project.line_item"
     >
       <form
         enctype="application/x-www-form-urlencoded"
@@ -315,15 +315,15 @@
 <script setup>
 import { inject, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import financialFormat from '../utilities/financialFormat'
 const route = useRoute()
 const projectId = route.params.id
 const apiClient = inject('$api', {})
-const project = ref({})
+const project = ref({ line_item: [] })
 const showEditMaterialForm = ref(false)
 const showCheckDeleteForm = ref(false)
 const updatedMaterial = ref({})
 const checkDeleteMaterial = ref({})
-const lineItemsWithMaterials = ref([])
 
 // this takes the data from the material and puts it in the edit material form
 const beginMaterialEdit = (data, area) => {
@@ -333,26 +333,35 @@ const beginMaterialEdit = (data, area) => {
 }
 // grab the project data
 const getProject = async () => {
-  project.value = await apiClient.getProject(projectId)
+  const projectResponse = await apiClient.getProject(projectId)
+  project.value = projectResponse?.project
 }
-// get all materials and line items associated with project ID
-const getLineItemsWithMaterials = async () => {
-  lineItemsWithMaterials.value = await apiClient.getLineItemsWithMaterials(
-    projectId
-  )
-}
+
 // Create new material along with blank line item and then run getLineItemsWithMaterials again
 const createMaterial = async (e) => {
   const data = new FormData(e.target)
-  await apiClient.createMaterial(data)
-  getLineItemsWithMaterials()
+  const lineItemResponse = await apiClient.createMaterial(data)
+  if (lineItemResponse?.line_item) {
+    project.value.line_item.push(lineItemResponse.line_item)
+  }
 }
 // Update the material
 const updateMaterial = async (e) => {
   const data = new FormData(e.target)
-  await apiClient.updateMaterial(updatedMaterial.value.material_id, data)
-  getLineItemsWithMaterials()
-  showEditMaterialForm.value = false
+  const updateMaterialResponse = await apiClient.updateMaterial(updatedMaterial.value.material_id, data)
+  if (updateMaterialResponse?.material) {
+    const material = updateMaterialResponse.material
+    showEditMaterialForm.value = false
+    const updatedProject = project.value
+    // Loop thorugh find matching id and replace with updated information
+    for (const lineItem of updatedProject.line_item) {
+      if (lineItem.material_id === material.id) {
+        lineItem.material = material
+      }
+    }
+    // set project to the new updated information
+    project.value = updatedProject
+  }
 }
 // Check to delete Material
 const showDeleteMaterial = (data, area) => {
@@ -362,41 +371,58 @@ const showDeleteMaterial = (data, area) => {
 }
 // Delete the material
 const deleteMaterial = async (id) => {
-  await apiClient.deleteMaterial(id)
-  getLineItemsWithMaterials()
-  showCheckDeleteForm.value = false
+  const deleteMaterialResponse = await apiClient.deleteMaterial(id)
+  if (deleteMaterialResponse?.material) {
+    showCheckDeleteForm.value = false
+    const material = deleteMaterialResponse.material
+    const updatedProject = project.value
+    updatedProject.line_item = updatedProject.line_item.filter(lineItem => lineItem.material_id !== material.id)
+    project.value = updatedProject
+  }
+}
+// Duplicate Line Item
+const duplicateLineItem = async (id, area) => {
+  const newLineItemRequest = await apiClient.duplicateLineItem(id)
+  if (newLineItemRequest?.line_item) {
+    const lineItem = newLineItemRequest.line_item
+    const existingLineItem = project.value.line_item.find(item => item.material_id === lineItem.material_id)
+    lineItem.material = existingLineItem
+    project.value.line_item.push(lineItem)
+    scroll(area)
+  }
 }
 // Update line item and reload materials
 const updateLineItem = async (e) => {
   const data = new FormData(e.target)
-  await apiClient.updateLineItem(data)
-  getLineItemsWithMaterials()
-}
-// Duplicate Line Item
-const duplicateLineItem = async (id, area) => {
-  await apiClient.duplicateLineItem(id)
-  getLineItemsWithMaterials()
-  scroll(area)
+  const updatedLineItemRequest = await apiClient.updateLineItem(data)
+  if (updatedLineItemRequest?.line_item) {
+    const updatedLineItem = updatedLineItemRequest.line_item
+    const projectCopy = project.value
+    const lineItem = projectCopy.line_item.find(item => item.id === updatedLineItem.id)
+    updatedLineItem.material = lineItem.material
+    project.value = projectCopy
+  }
 }
 // Delete Line Item
 const deleteLineItem = async (id) => {
-  await apiClient.deleteLineItem(id)
-  getLineItemsWithMaterials()
+  const deleteLineItemRequest = await apiClient.deleteLineItem(id)
+  if (deleteLineItemRequest?.line_item) {
+    const lineItem = deleteLineItemRequest.line_item
+    const lineItemIndex = project.value.line_item.findIndex(item => item.id === lineItem.id)
+    project.value.line_item.splice(lineItemIndex, 1)
+  }
+  // getLineItemsWithMaterials()
 }
 // Calculate the total cost of all line items in project
 const totalProjectCost = () => {
-  let totalCost = 0
-  for (const lineItem of lineItemsWithMaterials.value) {
-    totalCost += lineItem.quantity * lineItem.material.price
-  }
+  // let totalCost = 0
+  // for (const lineItem of project.value.line_item) {
+  //   totalCost += lineItem.quantity * lineItem.material.price
+  // }
+  const totalCost = project.value.line_item.reduce((total, lineItem) => {
+    return total + lineItem.quantity * lineItem.material.price
+  }, 0)
   return financialFormat(totalCost)
-}
-// format the money in a good way
-const financialFormat = (number) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD'
-  }).format(number)
 }
 
 const scroll = (area) => {
@@ -406,5 +432,4 @@ const scroll = (area) => {
 }
 
 onMounted(getProject)
-onMounted(getLineItemsWithMaterials)
 </script>

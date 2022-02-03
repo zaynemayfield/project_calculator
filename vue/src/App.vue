@@ -74,8 +74,6 @@ import { useStore } from 'vuex'
 import { inject, ref } from '@vue/runtime-core'
 const apiClient = inject('$api', {})
 const store = useStore()
-store.dispatch('initializeAccessToken')
-store.dispatch('initializeIsLoggedIn')
 const handleLogin = () => {
   isLoggedIn.value = true
 }

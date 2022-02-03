@@ -27,7 +27,8 @@ class MaterialController {
       if (!blankLineItem) {
         return new Helper(res).sendError('could not create Line Item for Material', 'name')
       }
-      return res.send({ material: material })
+      blankLineItem.material = material
+      return res.send({ line_item: blankLineItem })
     } catch (error) {
       console.log(error)
       return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
@@ -70,18 +71,14 @@ class MaterialController {
     if (!updateMaterial) {
       return new Helper(res).sendError('Material failed to update', 'id')
     }
-    return res.send({ updateMaterial: updateMaterial })
+    return res.send({ material: updateMaterial })
   }
 
   async delete (req, res) {
     // check for permission to delete
     const id = parseInt(req.params.id)
-    try {
-      await prisma.material.delete({ where: { id: id } })
-      return res.send({ material: id })
-    } catch (error) {
-      console.log(error)
-    }
+    const deleted = await prisma.material.delete({ where: { id: id } })
+    return res.send({ material: deleted })
   }
 }
 

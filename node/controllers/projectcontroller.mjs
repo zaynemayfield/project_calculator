@@ -34,7 +34,7 @@ class ProjectController {
   async read (req, res) {
     const userId = req.user._id
     const id = parseInt(req.params.id)
-    const project = await prisma.project.findUnique({ where: { id: id } })
+    const project = await prisma.project.findUnique({ where: { id: id }, include: { line_item: { include: { material: true } } } })
     if (!project) {
       return new Helper(res).sendError('No project with that ID Exists', 'id')
     }

@@ -35,11 +35,12 @@ class LineItemController {
   async duplicate (req, res) {
     const id = parseInt(req.params.id)
     const lineItem = await prisma.line_item.findUnique({ where: { id: id } })
+    // find creates an empty array so this works
     if (!lineItem) {
       return
     }
     const duplicateLineItem = await prisma.line_item.create({ data: { quantity: lineItem.quantity, user_id: lineItem.user_id, notes: lineItem.notes, project_id: lineItem.project_id, material_id: lineItem.material_id } })
-    return res.send({ duplicateLineItem: duplicateLineItem })
+    return res.send({ line_item: duplicateLineItem })
   }
 
   async read (req, res) {
@@ -84,7 +85,7 @@ class LineItemController {
           notes: req.body.notes
         }
       })
-      return res.send({ updateLineItem: updateLineItem })
+      return res.send({ line_item: updateLineItem })
     } catch (error) {
       return new Helper(res).sendError('Line Item failed to update', 'id')
     }
@@ -93,8 +94,8 @@ class LineItemController {
   async delete (req, res) {
     // check for permission to delete
     const id = parseInt(req.params.id)
-    await prisma.line_item.delete({ where: { id: id } })
-    return res.send({ deleteLineItem: id })
+    const deletedLineItem = await prisma.line_item.delete({ where: { id: id } })
+    return res.send({ line_item: deletedLineItem })
   }
 }
 

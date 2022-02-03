@@ -43,19 +43,11 @@ export default class ApiClient {
 
   async getProject (projectId) {
     const url = '/project/' + projectId
-    const request = await this.request(url)
-    if (!request?.project) {
-      return request
-    }
-    return request.project
+    return await this.request(url)
   }
 
   async createMaterial (data) {
-    const response = await this.request('/project/material/create', data)
-    if (!response?.material) {
-      return response
-    }
-    return response.material
+    return await this.request('/project/material/create', data)
   }
 
   async getMaterials (projectId) {
@@ -68,45 +60,25 @@ export default class ApiClient {
   }
 
   async updateMaterial (updateId, data) {
-    const response = await this.request('/project/material/update/' + updateId, data)
-    if (!response?.updateMaterial) {
-      return response
-    }
-    return response.updateMaterial
+    return await this.request('/project/material/update/' + updateId, data)
   }
 
   async deleteMaterial (materialId) {
     const url = '/project/material/delete/' + materialId
-    const request = await this.request(url)
-    if (!request?.material) {
-      return request
-    }
-    return request.material
+    return await this.request(url)
   }
 
   async updateLineItem (data) {
-    const response = await this.request('/project/material/line-item/update/', data)
-    if (!response?.updateLineItem) {
-      return response
-    }
-    return response.updateLineItem
+    return await this.request('/project/material/line-item/update/', data)
   }
 
   async duplicateLineItem (id) {
-    const response = await this.request('/project/material/line-item/duplicate/' + id)
-    if (!response?.duplicateLineItem) {
-      return response
-    }
-    return response.duplicateLineItem
+    return await this.request('/project/material/line-item/duplicate/' + id)
   }
 
   async deleteLineItem (lineItemId) {
     const url = '/project/material/line-item/delete/' + lineItemId
-    const request = await this.request(url)
-    if (!request?.deleteLineItem) {
-      return request
-    }
-    return request.deleteLineItem
+    return await this.request(url)
   }
 
   async getLineItemsWithMaterials (projectId) {
