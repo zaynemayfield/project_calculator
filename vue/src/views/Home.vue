@@ -21,7 +21,7 @@
     <ul v-if="projects.length">
       <!-- make the link clickable -->
       <li :key="index" v-for="(project, index) in projects">
-        <router-link :to="{ name: 'Design Project', params: { id: project.id } }">
+        <router-link :to="{ name: 'Design Project', params: { id: projects.id } }">
           <strong>{{ project.name }}</strong> - {{ project.summary }}</router-link>
       </li>
     </ul>

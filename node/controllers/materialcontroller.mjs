@@ -43,7 +43,7 @@ class MaterialController {
     }
     delete material.dataValues.user_id
     console.log(material)
-    return res.send({ material: material })
+    return res.send({ material })
   }
 
   async readAll (req, res) {

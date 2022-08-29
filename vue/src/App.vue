@@ -41,8 +41,7 @@
               >
             </li>
             <li v-if="isLoggedIn" class="nav-item">
-              <a href="#" @click.prevent="handleLogout()" class="nav-link">Logout</a
-              >
+              <a @click.prevent="handleLogout()" class="nav-link">Logout</a>
             </li>
           </ul>
         </div>

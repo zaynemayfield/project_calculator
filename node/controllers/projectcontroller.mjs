@@ -12,7 +12,7 @@ class ProjectController {
     }
     try {
       const project = await prisma.project.create({ data: { name: name, summary: req.body.summary, user_id: userId, type: req.body.type } })
-      return res.send({ project: project })
+      return res.send({ project })
     } catch (error) {
       console.log(error)
       // Check DB error to make sure project name is unique and reply
@@ -23,12 +23,12 @@ class ProjectController {
 
   async list (req, res) {
     const projects = await prisma.project.findMany({ where: { user_id: req.user._id } })
-    return res.send({ projects: projects })
+    return res.send({ projects })
   }
 
   async publicList (req, res) {
     const projects = await prisma.project.findMany({ where: { type: 'Public' }, include: { user: { select: { avatar: true } } }, orderBy: { updatedAt: 'desc' }, take: 3 })
-    return res.send({ projects: projects })
+    return res.send({ projects })
   }
 
   async read (req, res) {
@@ -41,7 +41,7 @@ class ProjectController {
     if (project.user_id !== userId) {
       return new Helper(res).sendError('You do not have permission to access this project', 'user_id')
     }
-    return res.send({ project: project })
+    return res.send({ project })
   }
 
   async update (req, res) {
@@ -63,7 +63,7 @@ class ProjectController {
     } catch (error) {
       return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
     }
-    return res.send({ projectId: projectId })
+    return res.send({ projectId })
   }
 }
 

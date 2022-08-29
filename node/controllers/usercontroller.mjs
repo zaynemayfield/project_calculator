@@ -79,7 +79,7 @@ class UserController {
       console.log('no avatar present')
     }
 
-    return res.send({ user: user })
+    return res.send({ user })
   }
 
   async read (req, res) {
@@ -89,7 +89,7 @@ class UserController {
       return new Helper(res).sendError('No user with that ID Exists', 'id')
     }
     delete user.password
-    return res.send({ user: user })
+    return res.send({ user })
   }
 
   async login (req, res) {
@@ -141,7 +141,7 @@ class UserController {
       return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
     }
 
-    return res.send({ userId: userId })
+    return res.send({ userId })
   }
 }
 

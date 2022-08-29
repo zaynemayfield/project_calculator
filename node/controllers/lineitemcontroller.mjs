@@ -7,7 +7,6 @@ class LineItemController {
   async createBlank (user, project, material) {
     try {
       const blankLineItem = await prisma.line_item.create({ data: { user_id: user, project_id: project, material_id: material } })
-      console.log(blankLineItem)
       return blankLineItem
     } catch (error) {
       console.log(error)
@@ -26,7 +25,7 @@ class LineItemController {
       const description = req.body.description
       const material = await prisma.material.create({ data: { name: name, user_id: userId, url: url, price: price, description: description } })
       delete material.dataValues.userId
-      return res.send({ material: material })
+      return res.send({ material })
     } catch (error) {
       return res.status(500).send({ errors: error.errors.map(error => { return { message: error.message, field: error.path } }) })
     }
@@ -50,7 +49,7 @@ class LineItemController {
       return new Helper(res).sendError('No material with that ID Exists', 'id')
     }
     delete material.dataValues.user_id
-    return res.send({ material: material })
+    return res.send({ material })
   }
 
   async both (req, res) {
